@@ -263,7 +263,15 @@ def set_date_field_value(driver, mode, label, date_str, idx=0):
     time.sleep(2)
 
     if mode == 1:
-        year_button = driver.find_elements(By.XPATH, f"//div[@class='v-picker__title__btn v-date-picker-title__year']")[idx]
+        year_buttons = driver.find_elements(By.XPATH, f"//div[@class='v-picker__title__btn v-date-picker-title__year']")
+
+        # Multiple modals are created => Then, check visibility
+        year_button = None
+        for possible in year_buttons:
+            if possible.is_displayed():
+                year_button = possible
+                break
+
         year_button.click()
 
     wait = WebDriverWait(driver, 10)
@@ -277,11 +285,29 @@ def set_date_field_value(driver, mode, label, date_str, idx=0):
 
     time.sleep(1)
 
-    day_element = driver.find_elements(By.XPATH, f"//div[text()='{day}']/ancestor::button")[idx]
+    day_elements = driver.find_elements(By.XPATH, f"//div[text()='{day}']/ancestor::button")
+
+    # Multiple modals are create => Then, check visibility
+    day_element = None
+    for possible in day_elements:
+        if possible.is_displayed():
+            day_element = possible
+            break
+
     day_element.click()
 
     if mode == 1:
-        click_button(driver, 'OK', idx)
+        oks = driver.find_elements(By.XPATH, f"//span[contains(text(),'OK')]/ancestor::button")
+        
+        # Multiple modals are created => Then, check visibility
+        ok = None
+        for possible in oks:
+            if possible.is_displayed():
+                ok = possible
+                break
+
+        ok.click()
+        
 
 def descargar_soporte(driver, idx):
     table = driver.find_element(By.XPATH, f"//div[contains(text(), 'Mis Solicitudes')]/following-sibling::div//table")
@@ -318,3 +344,6 @@ def UAC_validate_downloaded_filename(file_name):
         return (True, f'valid filename for {file_name}')
     return (False, f'invalid filename for {file_name}')
 
+def UAC_validate_input_field(driver, targetInputFieldLabel, expectedValue):
+    input = driver.find_element(By.XPATH, f"//label[text()='{targetInputFieldLabel}']/following-sibling::input")
+    return (input.text == expectedValue, f'The input field with label {targetInputFieldLabel} does not match value: {expectedValue}')
