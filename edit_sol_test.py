@@ -30,7 +30,7 @@ def edit_sol_test(driver, id, estado, encargado, rol, nota):
         shared.enter_textarea_value(driver, 'Nota', nota)
 
         if estado == 'Elaborado':
-            shared.enter_input_value(driver, 'Certificado digital', os.path.abspath(r'utils\files\certificado.pdf'))
+            shared.enter_input_value(driver, 'Certificado digital', os.path.abspath(r'utils\files\certificado.pdf'), mode=1)
 
         time.sleep(5)
         shared.click_button(driver, 'Guardar')

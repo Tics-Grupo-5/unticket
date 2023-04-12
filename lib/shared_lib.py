@@ -88,15 +88,23 @@ def click_button(driver, text, idx=0):
     # click the element
     element.click()
 
-def enter_input_value(driver, label, value):
+def click_link(driver, text, idx=0):
+    # find the element by the link text "Ver certificados"
+    element = driver.find_elements(By.XPATH, f"//span[contains(text(),'{text}')]/ancestor::a")[idx]
+
+    # click the element
+    element.click()
+
+def enter_input_value(driver, label, value, mode=0):
     # Find the label element with the matching text
     label_element = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
 
     # Find the input element next to the label
     input_element = label_element.find_element(By.XPATH, "./following-sibling::input")
 
-    input_element.send_keys(Keys.CONTROL + "a")
-    input_element.send_keys(Keys.DELETE)
+    if mode == 0: # mode 1 is for files, for those fields, we cannot do this
+        input_element.send_keys(Keys.CONTROL + "a")
+        input_element.send_keys(Keys.DELETE)
 
     time.sleep(1)
 

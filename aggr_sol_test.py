@@ -33,7 +33,7 @@ def aggr_sol_test(driver, nombres, apellidos, tipo_doc, num_doc, email, celular,
         shared.select_value(driver, 'Medio de pago', medio_pago)
         shared.press_esc_key(driver)
         shared.enter_input_value(driver, 'Numero de consignación', num_consig) # spelling error
-        shared.enter_input_value(driver, 'Soporte de pago', os.path.abspath(r'utils\files\soporte.pdf'))
+        shared.enter_input_value(driver, 'Soporte de pago', os.path.abspath(r'utils\files\soporte.pdf'), mode=1)
         shared.enter_textarea_value(driver, 'Nota interna', nota_interna)
         time.sleep(5)
         shared.click_button(driver, 'Crear')

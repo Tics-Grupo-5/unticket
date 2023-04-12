@@ -9,5 +9,6 @@ URLs = {
     "periodo-academico": "https://procesofibog.unal.edu.co/unticket/periodo-academico",    
     "certificados": "https://procesofibog.unal.edu.co/unticket/certificados",    
     "solicitudes": "https://procesofibog.unal.edu.co/unticket/solicitudes",    
-    "editar-solicitudes": "https://procesofibog.unal.edu.co/unticket/solicitudes/editar"
+    "editar-solicitudes": "https://procesofibog.unal.edu.co/unticket/solicitudes/editar",
+    "pago-virtual": "https://pagovirtual.unal.edu.co/index.php"
 }
