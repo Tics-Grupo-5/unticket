@@ -1,0 +1,37 @@
+pregrado	Ingeniería Agrícola
+pregrado	Ingeniería Civil
+pregrado	Ingeniería Eléctrica
+pregrado	Ingeniería Electrónica
+pregrado	Ingeniería Industrial
+pregrado	Ingeniería Mecánica
+pregrado	Ingeniería Mecatrónica
+pregrado	Ingeniería Química
+pregrado	Ingeniería de Sistemas y Computación
+posgrado	Especialización en Estructuras
+posgrado	Especialización en Gobierno Electrónico
+posgrado	Especialización en Iluminación Pública y Privada
+posgrado	Especialización en Tránsito, Diseño y Seguridad Vial
+posgrado	Maestría en Automatización Industrial
+posgrado	Maestría en Bioinformática
+posgrado	Maestría en Estructuras
+posgrado	Maestría en Geotecnia
+posgrado	Maestría en Ingeniería Agrícola
+posgrado	Maestría en Ingeniería Ambiental
+posgrado	Maestría en Ingeniería Eléctrica
+posgrado	Maestría en Ingeniería Electrónica
+posgrado	Maestría en Ingeniería Industrial
+posgrado	Maestría en Ingeniería Mecánica
+posgrado	Maestría en Ingeniería Química
+posgrado	Maestría en Materiales y Procesos
+posgrado	Maestría en Recursos Hidráulicos
+posgrado	Maestría en Sistemas y Computación
+posgrado	Maestría en Telecomunicaciones
+posgrado	Maestría en Transporte
+posgrado	Doctorado en Estudios Ambientales
+posgrado	Doctorado en Ingeniería Ciencia y Tecnología de Materiales
+posgrado	Doctorado en Ingeniería - Ingeniería Civil
+posgrado	Doctorado en Ingeniería Eléctrica
+posgrado	Doctorado en Industria y Organizaciones
+posgrado	Doctorado en Ingeniería Mecánica y Mecatrónica
+posgrado	Doctorado en Ingeniería Química
+posgrado	Doctorado en Ingeniería Sistemas y Computación

@@ -66,6 +66,11 @@ def select_role(driver, role):
     value = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(text(),'{role}')]")))
     value.click()
 
+def get_role(driver):
+    # Click on the dropdown list
+    dropdown = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='v-select__selections']")))
+    return dropdown.text
+
 def evaluate_UAC_result(result):
     if result[0] == True:
         print('UAC PASSED:', result[1])
@@ -111,6 +116,24 @@ def enter_input_value(driver, label, value, mode=0):
     # Enter the desired value into the input element
     input_element.send_keys(value)
 
+def get_input_value(driver, label):
+    # Find the label element with the matching text
+    label_element = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
+
+    # Find the input element next to the label
+    input_element = label_element.find_element(By.XPATH, "./following-sibling::input")
+
+    return input_element.get_attribute('value')
+
+def get_multiselect_values(driver, label):
+    # Find the label element with the matching text
+    label_element = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
+
+    # Find the input element next to the label
+    elements = label_element.find_elements(By.XPATH, "./following-sibling::div//span[@class='v-chip__content']")
+
+    return [e.text for e in elements]
+
 def enter_textarea_value(driver, label, value):
     # Find the label element with the matching text
     label_element = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
@@ -124,6 +147,15 @@ def enter_textarea_value(driver, label, value):
     # Enter the desired value into the input element
     input_element.send_keys(value)
 
+def get_textarea_value(driver, label):
+    # Find the label element with the matching text
+    label_element = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
+
+    # Find the input element next to the label
+    input_element = label_element.find_element(By.XPATH, "./following-sibling::textarea")
+
+    return input_element.get_attribute('value')
+
 def select_value(driver, label, value):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
     dropdown.click()
@@ -131,6 +163,14 @@ def select_value(driver, label, value):
     # Locate the desired value and click on it
     value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[contains(text(),'{value}')]")
     value.click()
+
+def get_select_dropdown_values(driver, label):
+    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
+    dropdown.click()
+    time.sleep(2)
+    # Locate the desired value and click on it
+    values = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title']")
+    return [v.text for v in values]
 
 def multiselect_values(driver, label, values):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
@@ -143,6 +183,10 @@ def multiselect_values(driver, label, values):
 def click_checkbox(driver, label):
     checkbox = driver.find_element(By.XPATH, f"//label[contains(text(), '{label}')]/preceding-sibling::div//input[@type='checkbox']/following-sibling::div")
     checkbox.click()
+
+def get_checkbox_value(driver, label):
+    checkbox = driver.find_element(By.XPATH, f"//label[contains(text(), '{label}')]/preceding-sibling::div//input[@type='checkbox']")
+    return checkbox.is_selected()
 
 def press_esc_key(driver):
     # Create an ActionChains instance
@@ -190,14 +234,14 @@ def UAC_validate_saved_record(driver, tablename, values, idx):
             return (True, f"record data match with [{values}]")
     return (False, f"no records found for [{', '.join(values)}]")
 
-def click_edit_button(driver, tablename, idx):
+def click_edit_button(driver, tablename, idx, pos=1):
     table = driver.find_element(By.XPATH, f"//div[contains(text(), '{tablename}')]/following-sibling::div//table")
     tbody = table.find_element(By.TAG_NAME, 'tbody')
     rows = tbody.find_elements(By.TAG_NAME, 'tr')
     if len(rows) > 0:
         row = rows[idx]
         tds = row.find_elements(By.TAG_NAME, 'td')
-        button = tds[-1].find_elements(By.TAG_NAME, 'button')[1]
+        button = tds[-1].find_elements(By.TAG_NAME, 'button')[pos]
         button.click()
     else:
         raise Exception('No records found')
@@ -355,3 +399,27 @@ def UAC_validate_downloaded_filename(file_name):
 def UAC_validate_input_field(driver, targetInputFieldLabel, expectedValue):
     input = driver.find_element(By.XPATH, f"//label[text()='{targetInputFieldLabel}']/following-sibling::input")
     return (input.text == expectedValue, f'The input field with label {targetInputFieldLabel} does not match value: {expectedValue}')
+
+def UAC_compare_form_fields(actual_values, expected_values):
+    for a, b in zip(actual_values, expected_values):
+        if str(a) != str(b):
+            return (False, f'mismatch between {a} and {b}')
+    return (True, f'all values match: {actual_values}, {expected_values}')
+
+def UAC_check_two_lists(list1, list2):
+    if sorted(list1) == sorted(list2):
+        return (True, f'both lists are equal')
+    return (False, f'lists are different')
+
+def UAC_check_element_in_dropdown(element, dropdown_elements):
+    if element in dropdown_elements:
+        return (True, f'element {element} is in dropdown')
+    return (False, f'element {element} is not in dropdown')
+
+def see_all_items(driver):
+    select_elem = driver.find_element(By.XPATH, "//div[@class='v-data-footer__select']//div[@class='v-select__slot']")
+    select_elem.click()
+    time.sleep(2)
+    # Locate the desired value and click on it
+    value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[contains(text(),'All')]")
+    value.click()
