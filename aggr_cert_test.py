@@ -5,10 +5,11 @@ import lib.shared_lib as shared
 import lib.logout_lib as logout
 import utils.datetime_id as id
 import traceback
+import data.data_api as data_api
 
 def aggr_cert_test(driver, rol, nombre, precio, recaudo, desc, nivel, programas, gratuito):
 
-    UAC = 6
+    UAC = 7
     passed = 0
 
     try:
@@ -22,6 +23,14 @@ def aggr_cert_test(driver, rol, nombre, precio, recaudo, desc, nivel, programas,
         time.sleep(2)
         shared.enter_input_value(driver, 'Nombre', nombre)
         shared.select_value(driver, 'Nivel', nivel)
+
+        # Los programas se filtran de acuerdo al grupo seleccionado
+        df = data_api.read_file(r'data\programas.txt', col_names=['nivel', 'programa'])
+        result = shared.UAC_check_two_lists(shared.get_dropdown_multiselect_values(driver, 'Programa'),
+                                             df.loc[df['nivel'] == nivel.lower(), 'programa'].tolist())
+        passed += shared.evaluate_UAC_result(result)
+        shared.press_esc_key(driver)
+
         shared.enter_input_value(driver, 'Precio', precio)
         shared.enter_input_value(driver, 'Recaudo', recaudo)
         shared.enter_textarea_value(driver, 'Descripción', desc)
@@ -68,6 +77,7 @@ def aggr_cert_test(driver, rol, nombre, precio, recaudo, desc, nivel, programas,
         shared.click_button(driver, 'Agregar')
         time.sleep(5)
         shared.select_value(driver, 'Grupo', nivel.title()) # titlecase in this form
+
         shared.select_value(driver, 'Programa', programas[0])
         result = shared.UAC_check_element_in_dropdown(nombre, shared.get_select_dropdown_values(driver, 'Certificado'))
         passed += shared.evaluate_UAC_result(result)

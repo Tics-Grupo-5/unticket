@@ -203,6 +203,14 @@ def multiselect_values(driver, label, values):
         checkbox = driver.find_element(By.XPATH, f"//div[text()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
         checkbox.click()
 
+def get_dropdown_multiselect_values(driver, label):
+    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
+    dropdown.click()
+
+    items = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title']")
+    values = [item.text for item in items]
+    return values
+
 def click_checkbox(driver, label):
     checkbox = driver.find_element(By.XPATH, f"//label[contains(text(), '{label}')]/preceding-sibling::div//input[@type='checkbox']/following-sibling::div")
     checkbox.click()

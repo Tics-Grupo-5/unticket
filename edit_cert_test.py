@@ -3,15 +3,19 @@ from getpass import getpass
 from login_test import login_test as login
 import lib.shared_lib as shared
 import utils.datetime_id as id
+import data.data_api as data_api
 import os
 import traceback
 
-def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, programas, cambio_gratuito):
+def edit_cert_test(driver, rol, nombre, nuevo_nombre, nivel, precio, recaudo, desc, programas, cambio_gratuito):
 
-    UAC = 3
+    UAC = 5
     passed = 0
 
     try:
+
+        shared.select_role(driver, rol)
+        time.sleep(5)
 
         shared.select_module(driver, 'Ver certificados')
         time.sleep(10)
@@ -24,6 +28,14 @@ def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, p
 
         shared.enter_input_value(driver, 'Nombre', nuevo_nombre)
         shared.select_value(driver, 'Nivel', nivel)
+
+        # Los programas se filtran de acuerdo al grupo seleccionado
+        df = data_api.read_file(r'data\programas.txt', col_names=['nivel', 'programa'])
+        result = shared.UAC_check_two_lists(shared.get_dropdown_multiselect_values(driver, 'Programa'),
+                                             df.loc[df['nivel'] == nivel.lower(), 'programa'].tolist())
+        passed += shared.evaluate_UAC_result(result)
+        shared.press_esc_key(driver)
+
         shared.enter_input_value(driver, 'Precio', precio)
         shared.enter_input_value(driver, 'Recaudo', recaudo)
         shared.enter_textarea_value(driver, 'Descripción', desc)
@@ -39,6 +51,11 @@ def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, p
         shared.click_button(driver, 'Guardar')
         
         time.sleep(10)
+
+        # El rol seleccionado se mantiene tras enviar el formulario
+        result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
+        passed += shared.evaluate_UAC_result(result)
+
         shared.search(driver, 'Certificados', nombre)
 
         result = shared.UAC_check_unique_record(driver, 'Certificados', nombre)
@@ -71,6 +88,4 @@ def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, p
 if __name__ == "__main__":
     driver = shared.init_driver()
     login(driver, input('Username: '), getpass('Password: '))
-    shared.select_role(driver, 'Administrador')
-    time.sleep(5)
-    edit_cert_test(driver, nombre='Mi Certificado 642cde6d', nuevo_nombre='Mi Certificado 642cde6d', nivel='pregrado', precio=10000, recaudo='2023000', desc='UN Certificado', programas=['Ingeniería Agrícola', 'Ingeniería Civil', 'Ingeniería Química'], cambio_gratuito=True)
+    edit_cert_test(driver, rol='Administrador', nombre='Mi Certificado 642cde6d', nuevo_nombre='Mi Certificado 642cde6d', nivel='pregrado', precio=10000, recaudo='2023000', desc='UN Certificado', programas=['Ingeniería Agrícola', 'Ingeniería Civil', 'Ingeniería Química'], cambio_gratuito=True)

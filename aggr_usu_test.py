@@ -7,7 +7,7 @@ import traceback
 
 def aggr_usu_test(driver, rol, username, nombres, apellidos, tipo_doc, num_doc, roles):
 
-    UAC = 3
+    UAC = 4
     passed = 0
 
     try:
@@ -25,6 +25,11 @@ def aggr_usu_test(driver, rol, username, nombres, apellidos, tipo_doc, num_doc, 
         shared.press_esc_key(driver)
         shared.click_button(driver, 'Guardar')
         time.sleep(5)
+
+        # El rol seleccionado se mantiene tras enviar el formulario
+        result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
+        passed += shared.evaluate_UAC_result(result)
+
         shared.search(driver, 'Usuarios', username)
         result = shared.UAC_check_unique_record(driver, 'Usuarios', username)
         passed += shared.evaluate_UAC_result(result)

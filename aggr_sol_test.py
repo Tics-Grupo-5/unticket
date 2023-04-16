@@ -9,7 +9,7 @@ import data.data_api as data_api
 
 def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, celular, grupo, programa, estado_usu, cert, observaciones, medio_pago, num_consig, nota_interna):
 
-    UAC = 4
+    UAC = 5
     passed = 0
 
     try:
@@ -65,6 +65,10 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
             passed += shared.evaluate_UAC_result(result)
 
             passed += 0 # El sistema redirige a la tabla de solicitudes tras enviar el formulario
+
+        # El rol seleccionado se mantiene tras enviar el formulario
+        result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
+        passed += shared.evaluate_UAC_result(result)
 
         # Los datos del certificado aparecen correctamente en el modo edición
         shared.click_edit_button(driver, 'Solicitudes', 0, 0)   

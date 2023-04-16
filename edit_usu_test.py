@@ -7,12 +7,15 @@ import os
 import traceback
 import utils.roles as roles
 
-def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambio_estado, roles):
+def edit_usu_test(driver, username, rol, nombres, apellidos, tipo_doc, num_doc, cambio_estado, roles):
 
-    UAC = 2
+    UAC = 3
     passed = 0
 
     try:
+
+        shared.select_role(driver, rol)
+        time.sleep(5)
 
         shared.select_module(driver, 'Administrar usuarios')
         time.sleep(10)
@@ -41,6 +44,11 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
         shared.click_button(driver, 'Guardar')
         
         time.sleep(10)
+
+        # El rol seleccionado se mantiene tras enviar el formulario
+        result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
+        passed += shared.evaluate_UAC_result(result)
+
         shared.search(driver, 'Usuarios', username)
 
         result = shared.UAC_validate_saved_record(driver, 'Usuarios', [username, ' '.join(roles)], 0)
@@ -69,6 +77,5 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
 if __name__ == "__main__":
     driver = shared.init_driver()
     login(driver, input('Username: '), getpass('Password: '))
-    shared.select_role(driver, 'Administrador')
-    time.sleep(5)
-    edit_usu_test(driver, username='alicia642e68b8', nombres='Alice', apellidos='Smith', tipo_doc='C.C.', num_doc='1680763064', cambio_estado=True, roles=roles.get_roles(4))
+
+    edit_usu_test(driver, username='alicia642e68b8', rol='Administrador', nombres='Alice', apellidos='Smith', tipo_doc='C.C.', num_doc='1680763064', cambio_estado=True, roles=roles.get_roles(4))

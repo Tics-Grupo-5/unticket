@@ -7,12 +7,15 @@ import os
 import traceback
 import utils.filters as filters
 
-def bus_sol_test(driver, filter, keyword, expected):
+def bus_sol_test(driver, rol, filter, keyword, expected):
     
     UAC = 1
     passed = 0
 
     try:
+
+        shared.select_role(driver, rol)
+        time.sleep(5)
 
         shared.select_module(driver, 'Solicitudes')
         time.sleep(10)
@@ -33,8 +36,7 @@ def bus_sol_test(driver, filter, keyword, expected):
 if __name__ == "__main__":
     driver = shared.init_driver()
     login(driver, input('Username: '), getpass('Password: '))
-    shared.select_role(driver, 'Administrador')
-    time.sleep(5)
-    bus_sol_test(driver, filter=filters.FILTERS['solicitudes']['id'], keyword='1511', expected=True)
-    bus_sol_test(driver, filter=filters.FILTERS['solicitudes']['id'], keyword='3000', expected=False)
-    bus_sol_test(driver, filter=filters.FILTERS['solicitudes']['nombre_solicitante'], keyword='Zamir', expected=True)
+
+    bus_sol_test(driver, rol='Administrador', filter=filters.FILTERS['solicitudes']['id'], keyword='1511', expected=True)
+    bus_sol_test(driver, rol='Administrador', filter=filters.FILTERS['solicitudes']['id'], keyword='3000', expected=False)
+    bus_sol_test(driver, rol='Administrador', filter=filters.FILTERS['solicitudes']['nombre_solicitante'], keyword='Zamir', expected=True)

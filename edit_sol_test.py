@@ -19,7 +19,7 @@ estado_to_roles = {
 
 def edit_sol_test(driver, username, rol, id, estado, encargado, rol_encargado, nota):
 
-    UAC = 8
+    UAC = 9
     passed = 0
 
     try:
@@ -76,6 +76,11 @@ def edit_sol_test(driver, username, rol, id, estado, encargado, rol_encargado, n
         shared.click_button(driver, 'Guardar')
         
         time.sleep(10)
+
+        # El rol seleccionado se mantiene tras enviar el formulario
+        result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
+        passed += shared.evaluate_UAC_result(result)
+
         shared.search(driver, 'Solicitudes', id)
 
         result = shared.UAC_validate_saved_record(driver, 'Solicitudes', [id, None, None, None, estado, encargado], 0)
