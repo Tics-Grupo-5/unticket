@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import os
 import utils.months as months
+import re
 
 def init_driver():
     # Create a new instance of the Chrome driv
@@ -78,6 +79,14 @@ def evaluate_UAC_result(result):
     else:
         print('UAC FAILED:', result[1])
         return 0
+    
+def evaluate_composite_UAC_result(results):
+    for result in results:
+        if result[0] != True:
+            print('UAC Failed:', result[1])
+            return 0
+    print('UAC PASSED:', [result[1] for result in results])
+    return 1
     
 def select_module(driver, module):
     # find the element by the link text "Ver certificados"
@@ -156,13 +165,18 @@ def get_textarea_value(driver, label):
 
     return input_element.get_attribute('value')
 
-def select_value(driver, label, value):
+def select_value(driver, label, value, strict=False):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
     dropdown.click()
     time.sleep(2)
     # Locate the desired value and click on it
-    value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[contains(text(),'{value}')]")
-    value.click()
+    if strict: 
+        value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[normalize-space()='{value}']")
+        value.click()
+    else:
+        value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[contains(text(),'{value}')]")
+        value.click()
+
 
 def get_select_dropdown_values(driver, label):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
@@ -223,11 +237,12 @@ def UAC_check_unique_record(driver, tablename, value):
 
 
 def UAC_validate_saved_record(driver, tablename, values, idx):
-
     table = driver.find_element(By.XPATH, f"//div[contains(text(), '{tablename}')]/following-sibling::div//table")
     tbody = table.find_element(By.TAG_NAME, 'tbody')
     rows = tbody.find_elements(By.TAG_NAME, 'tr')
     if len(rows) > 0:
+        if rows[0].text == 'No matching records found':
+            return (False, f'no records found for {values}')
         row = rows[idx]
         tds = row.find_elements(By.TAG_NAME, 'td')
         tds = tds[:len(values)]
@@ -382,6 +397,10 @@ def descargar_soporte(driver, idx):
     else:
         raise Exception('No records found')
 
+def descargar_soporte_from_edit_form(driver):
+    link_element = driver.find_element(By.LINK_TEXT, 'Soporte de pago')
+    link_element.click()
+
 def descargar_certificado(driver, idx):
     table = driver.find_element(By.XPATH, f"//div[contains(text(), 'Mis Solicitudes')]/following-sibling::div//table")
     tbody = table.find_element(By.TAG_NAME, 'tbody')
@@ -394,16 +413,34 @@ def descargar_certificado(driver, idx):
     else:
         raise Exception('No records found')
 
-def UAC_validate_downloaded_filename(file_name):
+def UAC_validate_downloaded_filename(file_name, file):
     folder = os.path.abspath('downloads')
     filename = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
     while 'crdownload' in filename or 'tmp' in filename:
         print('waiting for download to finish ...')
         time.sleep(5)
         filename = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
-    if os.path.basename(filename).startswith(file_name):
-        return (True, f'valid filename for {file_name}')
-    return (False, f'invalid filename for {file_name}')
+    basename = os.path.basename(filename)
+    if file == 0:
+        pattern = re.compile(r"\d{4}-\d")
+        if pattern.match(basename[:6]) and basename[7:].startswith(file_name):
+            return (True, f'valid filename for {file_name}: {basename}')
+        return (False, f'invalid filename for {file_name}: {basename}')
+    elif file == 1:
+        pattern = re.compile(r"C_\d{4}-\d")
+        if pattern.match(basename[:8]) and basename[9:].startswith(file_name):
+            return (True, f'valid filename for {file_name}: {basename}')
+        return (False, f'invalid filename for {file_name}: {basename}')
+    elif file == 2 or file == 3 or file == 5:
+        if basename.startswith(file_name):
+            return (True, f'valid filename for {file_name}: {basename}')
+        return (False, f'invalid filename for {file_name}: {basename}')
+    elif file == 4:
+        pattern = re.compile(r"\d{4}-\d")
+        if pattern.match(basename[14:20]) and basename[:14].startswith(file_name):
+            return (True, f'valid filename for {file_name}: {basename}')
+        return (False, f'invalid filename for {file_name}: {basename}')
+
 
 def UAC_validate_input_field(driver, targetInputFieldLabel, expectedValue):
     input = driver.find_element(By.XPATH, f"//label[text()='{targetInputFieldLabel}']/following-sibling::input")
@@ -417,18 +454,18 @@ def UAC_compare_form_fields(actual_values, expected_values):
 
 def UAC_check_two_lists(list1, list2):
     if sorted(list1) == sorted(list2):
-        return (True, f'both lists are equal')
-    return (False, f'lists are different')
+        return (True, f'both lists are equal: {list1}, {list2}')
+    return (False, f'lists are different: {list1}, {list2}')
 
 def UAC_check_element_in_dropdown(element, dropdown_elements):
     if element in dropdown_elements:
-        return (True, f'element {element} is in dropdown')
-    return (False, f'element {element} is not in dropdown')
+        return (True, f'element {element} is in dropdown: {dropdown_elements}')
+    return (False, f'element {element} is not in dropdown: {dropdown_elements}')
 
 def UAC_check_element_not_in_dropdown(element, dropdown_elements):
     if element not in dropdown_elements:
-        return (True, f'element {element} is in dropdown')
-    return (False, f'element {element} is not in dropdown')
+        return (True, f'element {element} is in dropdown: {dropdown_elements}')
+    return (False, f'element {element} is not in dropdown: {dropdown_elements}')
 
 def see_all_items(driver):
     select_elem = driver.find_element(By.XPATH, "//div[@class='v-data-footer__select']//div[@class='v-select__slot']")
@@ -437,3 +474,31 @@ def see_all_items(driver):
     # Locate the desired value and click on it
     value = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[contains(text(),'All')]")
     value.click()
+
+def UAC_check_estados_for_role(estados, role):
+    if role in ['Administrador', 'Gestor 1', 'Gestor 2']:
+        if sorted(estados) == sorted(['Radicado', 'En trámite', 'Aclaración', 'Elaborado', 'Cerrado']):
+            return (True, f'available estados are correct for role {role}')
+        return (False, f'available estados are incorrect for role {role}')
+    elif role == 'Recepción':
+        if estados == ['Cerrado']:
+            return (True, f'available estados are correct for role {role}')
+        return (False, f'available estados are incorrect for role {role}')
+
+def UAC_check_registro_de_actividad(driver, keywords):
+    card = driver.find_element(By.XPATH, '(//div[contains(@class, "v-card v-sheet")])[last()]')
+    for keyword in keywords:
+        if keyword not in card.text:
+            return (False, f'{keyword} not in registro de actividad')
+    return (True, f'{keywords} in registro de actividad')
+
+def get_all_solicitudes_ids(driver):
+    see_all_items(driver)
+    table = driver.find_element(By.XPATH, f"//div[contains(text(), 'Mis Solicitudes')]/following-sibling::div//table")
+    tbody = table.find_element(By.TAG_NAME, 'tbody')
+    rows = tbody.find_elements(By.TAG_NAME, 'tr')
+    ids = []
+    for row in rows:
+        tds = row.find_elements(By.TAG_NAME, 'td')
+        ids.append(tds[0].text)
+    return ids

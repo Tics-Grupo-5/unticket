@@ -10,7 +10,7 @@ import traceback
 
 def gen_rep_test(driver, report, periodo_academico=None, f_inicio=None, f_final=None):
 
-    UAC = 0
+    UAC = 2
     passed = 0
 
     try:
@@ -23,20 +23,43 @@ def gen_rep_test(driver, report, periodo_academico=None, f_inicio=None, f_final=
             time.sleep(5)
             shared.click_button(driver, 'Generar')
             time.sleep(5)
+
+            file_name_substr = f'ReportePeriodo{periodo_academico}'
+            result = shared.UAC_validate_downloaded_filename(file_name_substr, file=2)
+            passed += shared.evaluate_UAC_result(result)
+            passed += 1
+
         elif report == 2:
             shared.click_button(driver, 'reporte histórico')
             time.sleep(5)
+
+            file_name_substr = f'ReporteHistorico'
+            result = shared.UAC_validate_downloaded_filename(file_name_substr, file=3)
+            passed += shared.evaluate_UAC_result(result)
+            passed += 1
+
         elif report == 3:
             shared.click_button(driver, 'reporte periodo actual')
             time.sleep(5)
+
+            file_name_substr = f'ReportePeriodo'
+            result = shared.UAC_validate_downloaded_filename(file_name_substr, file=4)
+            passed += shared.evaluate_UAC_result(result)
+            passed += 1
+
         elif report == 4:
             shared.set_date_field_value(driver, 1, 'Inicio', f_inicio)
             time.sleep(5)
             shared.set_date_field_value(driver, 1, 'Final', f_final)
             time.sleep(5)
             shared.click_button(driver, 'Generar', idx=1)
-
             time.sleep(5)
+
+            file_name_substr = f'ReporteFechas'
+            result = shared.UAC_validate_downloaded_filename(file_name_substr, file=5)
+            passed += shared.evaluate_UAC_result(result)
+            passed += 1
+
 
         print(f'GEN REP: {passed}/{UAC} UAC PASSED')
 

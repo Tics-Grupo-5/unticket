@@ -9,7 +9,7 @@ import traceback
 # Test de agregar aclaracion - solicitante
 def aggr_acl_test(driver, id, respuesta):
 
-  UAC = 1
+  UAC = 2
   passed = 0
 
   try:
@@ -24,6 +24,7 @@ def aggr_acl_test(driver, id, respuesta):
     time.sleep(5)
 
     shared.enter_textarea_value(driver, 'Respuesta', respuesta)
+
     shared.click_button(driver, 'Guardar')
     time.sleep(5)
   
@@ -31,6 +32,20 @@ def aggr_acl_test(driver, id, respuesta):
     shared.search(driver, 'Mis Solicitudes', id)
     result = shared.UAC_validate_saved_record(driver, 'Mis Solicitudes', [id, 'En trámite'], 0)
     passed += shared.evaluate_UAC_result(result)
+
+    results = []
+    for _rol_ in ['Administrador', 'Gestor 1', 'Gestor 2', 'Recepción']:
+        shared.select_role(driver, _rol_)
+        time.sleep(5)
+
+        shared.select_module(driver, 'Solicitudes')
+        time.sleep(10)
+
+        shared.search(driver, 'Solicitudes', id)
+
+        results.append(shared.UAC_validate_saved_record(driver, 'Solicitudes', [id, None, None, None, 'En trámite'], 0))
+            
+    passed += shared.evaluate_composite_UAC_result(results)
 
     print(f'AGGR ACL: {passed}/{UAC} UAC PASSED')
   except Exception as e:
@@ -42,7 +57,7 @@ if __name__ == '__main__':
   login(driver, input('Username: '), getpass('Password: '))
   shared.select_role(driver, 'Solicitante')
   #aggr_acl_test(driver, id='1512', respuesta='aclaración 1512')
-  aggr_acl_test(driver, id='1508', respuesta='aclaración 1508')
+  aggr_acl_test(driver, id='1508', respuesta='aclaración 1508') # PRECONDICIÓN: Necesita estar en estado Aclaración
 
 
 

@@ -9,7 +9,7 @@ import utils.roles as roles
 
 def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambio_estado, roles):
 
-    UAC = 1
+    UAC = 2
     passed = 0
 
     try:
@@ -19,7 +19,7 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
 
         shared.search(driver, 'Usuarios', username)
 
-        shared.click_edit_button(driver, 'Usuarios', 0, pos=1)
+        shared.click_edit_button(driver, 'Usuarios', 0, pos=0)
 
         time.sleep(5)
 
@@ -28,8 +28,10 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
         shared.select_value(driver, 'Tipo de documento', tipo_doc)
         shared.enter_input_value(driver, 'Documento', num_doc)
 
+        estado = shared.get_checkbox_value(driver, 'Estado') 
         if cambio_estado:
             shared.click_checkbox(driver, 'Estado')
+            estado = not estado
 
         shared.multiselect_values(driver, 'Roles', roles)
         shared.press_esc_key(driver)
@@ -43,6 +45,19 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
 
         result = shared.UAC_validate_saved_record(driver, 'Usuarios', [username, ' '.join(roles)], 0)
         passed += shared.evaluate_UAC_result(result)
+
+            # Los datos del certificado aparecen correctamente en el modo edición
+        shared.click_edit_button(driver, 'Usuarios', 0, pos=0) 
+
+        result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombres'),
+                                                shared.get_input_value(driver, 'Apellidos'),
+                                                shared.get_input_value(driver, 'Tipo de documento'),
+                                                shared.get_input_value(driver, 'Documento'),
+                                                shared.get_checkbox_value(driver, 'Estado'),
+                                                sorted(shared.get_multiselect_values(driver, 'Roles')),
+                                                ], [nombres, apellidos, tipo_doc, num_doc, estado, sorted(roles)])
+        passed += shared.evaluate_UAC_result(result)
+        shared.click_button(driver, 'Cerrar', 1)
 
         print(f'EDIT USU: {passed}/{UAC} UAC PASSED')
 

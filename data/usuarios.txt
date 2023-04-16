@@ -1,0 +1,47 @@
+diquintero	Diego Esteban	Administrador
+diquintero	Diego Esteban	Gestor 1
+diquintero	Diego Esteban	Gestor 2
+diquintero	Diego Esteban	Recepción
+diquintero	Diego Esteban	Solicitante
+crvargasm	Cristian Camilo	Administrador
+crvargasm	Cristian Camilo	Gestor 1
+crvargasm	Cristian Camilo	Gestor 2
+crvargasm	Cristian Camilo	Recepción
+crvargasm	Cristian Camilo	Solicitante
+pgrisales	Pedro Rodrigo	Administrador
+pgrisales	Pedro Rodrigo	Gestor 1
+pgrisales	Pedro Rodrigo	Gestor 2
+pgrisales	Pedro Rodrigo	Recepción
+pgrisales	Pedro Rodrigo	Solicitante
+zvelasquezb	Zamir	Administrador
+zvelasquezb	Zamir	Gestor 1
+zvelasquezb	Zamir	Gestor 2
+zvelasquezb	Zamir	Recepción
+zvelasquezb	Zamir	Solicitante
+femorenoba	Fernando	Administrador
+femorenoba	Fernando	Gestor 1
+femorenoba	Fernando	Gestor 2
+femorenoba	Fernando	Recepción
+femorenoba	Fernando	Solicitante
+mvilladas	Miguel Angel	Administrador
+mvilladas	Miguel Angel	Gestor 1
+mvilladas	Miguel Angel	Gestor 2
+mvilladas	Miguel Angel	Recepción
+mvilladas	Miguel Angel	Solicitante
+saacostam	Santiago	Administrador
+saacostam	Santiago	Gestor 1
+saacostam	Santiago	Gestor 2
+saacostam	Santiago	Recepción
+saacostam	Santiago	Solicitante
+alicia642e68b8	Alice	Administrador
+alicia642e68b8	Alice	Gestor 1
+alicia642e68b8	Alice	Gestor 2
+alicia642e68b8	Alice	Solicitante 
+asde_fibog	Asde	Administrador
+asde_fibog	Asde	Gestor 1
+asde_fibog	Asde	Gestor 2
+asde_fibog	Asde    Solicitante 
+calidad_fibog   Calidad Administrador
+calidad_fibog	Calidad	Gestor 1
+calidad_fibog	Calidad	Gestor 2
+calidad_fibog	Calidad	Solicitante 
