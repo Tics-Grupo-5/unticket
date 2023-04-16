@@ -45,18 +45,19 @@ def edit_usu_test(driver, username, rol, nombres, apellidos, tipo_doc, num_doc, 
         
         time.sleep(10)
 
-        # El rol seleccionado se mantiene tras enviar el formulario
+        # [UAC] El rol seleccionado se mantiene tras enviar el formulario
         result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
+        # [UAC] El usuario se guarda con los datos correctos
         shared.search(driver, 'Usuarios', username)
-
         result = shared.UAC_validate_saved_record(driver, 'Usuarios', [username, ' '.join(roles)], 0)
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
-            # Los datos del certificado aparecen correctamente en el modo edición
+        # [UAC] Los datos del usuario aparecen correctamente en el modo edición
         shared.click_edit_button(driver, 'Usuarios', 0, pos=0) 
-
         result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombres'),
                                                 shared.get_input_value(driver, 'Apellidos'),
                                                 shared.get_input_value(driver, 'Tipo de documento'),
@@ -66,6 +67,7 @@ def edit_usu_test(driver, username, rol, nombres, apellidos, tipo_doc, num_doc, 
                                                 ], [nombres, apellidos, tipo_doc, num_doc, estado, sorted(roles)])
         passed += shared.evaluate_UAC_result(result)
         shared.click_button(driver, 'Cerrar', 1)
+        # END UAC CHECK
 
         print(f'EDIT USU: {passed}/{UAC} UAC PASSED')
 

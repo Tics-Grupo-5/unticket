@@ -6,12 +6,15 @@ import utils.datetime_id as id
 import os
 import traceback
 
-def des_arch_test(driver, id, file, username):
+def des_arch_test(driver, rol, id, file, username):
 
     UAC = 2
     passed = 0
 
     try:
+
+        shared.select_role(driver, rol)
+        time.sleep(5)
 
         shared.select_module(driver, 'Mis solicitudes')
         time.sleep(10)
@@ -21,14 +24,15 @@ def des_arch_test(driver, id, file, username):
         time.sleep(10)
 
         shared.descargar_soporte(driver, 0)
-
-        file_name_substr = f'{username}_{id}'
-
         time.sleep(5)
 
+        # [UAC] El archivo se descarga correctamente
+        # [UAC] El archivo se descarga con el nombre correcto
+        file_name_substr = f'{username}_{id}'
         result = shared.UAC_validate_downloaded_filename(file_name_substr, file)
         passed += shared.evaluate_UAC_result(result)
         passed += 1
+        # END UAC CHECK
 
         print(f'DES ARCH: {passed}/{UAC} UAC PASSED')
 
@@ -41,8 +45,6 @@ if __name__ == "__main__":
     driver = shared.init_driver()
     username = input('Username: ')
     login(driver, username, getpass('Password: '))
-    shared.select_role(driver, 'Solicitante')
-    time.sleep(5)
     # 0 : soporte
     # 1 : certificado
-    des_arch_test(driver, id='1508', file=0, username=username)
+    des_arch_test(driver, rol='Solicitante', id='1508', file=0, username=username)

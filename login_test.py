@@ -7,7 +7,7 @@ import traceback
 
 def login_test(driver, username, password):
 
-    UAC = 4
+    UAC = 2
     passed = 0
 
     try:
@@ -21,45 +21,31 @@ def login_test(driver, username, password):
         shared.switch_to_window(driver, 1)
         
         time.sleep(2)
-        
-        # User Acceptance Criteria Check
-        result = login.UAC_check_unal_domain(driver)
-        passed += shared.evaluate_UAC_result(result)
-        
+
+        # [UAC] El sistema evita el ingreso de cuentas con dominio diferente de unal.edu.co
+        results = []
+        results.append(login.UAC_check_unal_domain(driver))
         login.login_to_unal_ldap(driver, username, password)
-        
         time.sleep(5)
-        
         login.confirm_google_account(driver)
-        
         time.sleep(3)
-
         login.click_use_another_account(driver)
-
         time.sleep(3)
-        
-        # User Acceptance Criteria Check
-        result = login.UAC_check_google_unal_domain(driver)
-        passed += shared.evaluate_UAC_result(result)
-
+        results.append(login.UAC_check_google_unal_domain(driver))
         login.login_to_google(driver, username)
-
         time.sleep(2)
-
-        # User Acceptance Criteria Check
-        result = login.UAC_check_unal_domain(driver)
-        passed += shared.evaluate_UAC_result(result)
-        
+        results.append(login.UAC_check_unal_domain(driver))
+        passed += shared.evaluate_composite_UAC_result(results)
+        # END UAC CHECK
         
         login.login_to_unal_ldap(driver, username, password)
-
         time.sleep(10)
-
         shared.switch_to_window(driver, 0)
 
-        # User Acceptance Criteria Check
+        # [UAC] El usuario autenticado es dirigido a su perfil correctamente
         result = shared.UAC_check_current_url(driver, 'perfil')
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
         print(f'LOGIN: {passed}/{UAC} UAC PASSED')
 

@@ -24,8 +24,10 @@ def bus_msol_test(driver, rol, filter, keyword, expected):
 
         time.sleep(5)
 
+        # [UAC] Al buscar por id, estado, certificado, número de pago u observaciones aparecen los resultados correctos
         result = shared.UAC_check_search_results(driver, 'Mis Solicitudes', keyword, filter['column'], filter['unique'], expected)
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
         print(f'BUS MSOL: {passed}/{UAC} UAC PASSED')
 

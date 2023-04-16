@@ -31,12 +31,13 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
         shared.click_checkbox(driver, 'Acepto las políticas')
         shared.select_value(driver, 'Grupo', grupo)
         
-        # Los programas se filtran de acuerdo al grupo seleccionado
+        # [UAC] Los programas se filtran de acuerdo al grupo seleccionado
         df = data_api.read_file(r'data\programas.txt', col_names=['nivel', 'programa'])
         result = shared.UAC_check_two_lists(shared.get_select_dropdown_values(driver, 'Programa'),
                                              df.loc[df['nivel'] == grupo.lower(), 'programa'].tolist())
         passed += shared.evaluate_UAC_result(result)
         shared.press_esc_key(driver)
+        # END UAC CHECK
 
         shared.select_value(driver, 'Programa', programa)
         shared.select_value(driver, 'Estado', estado_usu)
@@ -53,13 +54,15 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
         shared.click_button(driver, 'Crear')
         time.sleep(2)
       
+        # [UAC] El sistema redirige a la tabla de solicitudes tras enviar el formulario
         try:
-            # La solicitud se guarda con los datos correctos
+            # [UAC] La solicitud se guarda con los datos correctos
             result = shared.UAC_validate_saved_record(driver, 'Solicitudes', [None, f'{nombres} {apellidos}', None, 'Radicado'], 0) # idx 0 because oredered by update time desc
             passed += shared.evaluate_UAC_result(result)
+            # END UAC CHECK
 
-            passed += 1 # El sistema redirige a la tabla de solicitudes tras enviar el formulario
-
+            passed += 1 # El sistema redirige a la tabla de solicitudes tras enviar el formulario         
+            # END UAC CHECK
         except:
             shared.select_module(driver, 'Solicitudes')
             time.sleep(10)
@@ -67,17 +70,16 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
             result = shared.UAC_validate_saved_record(driver, 'Solicitudes', [None, f'{nombres} {apellidos}', None, 'Radicado'], 0) # idx 0 because oredered by update time desc
             passed += shared.evaluate_UAC_result(result)
 
-            passed += 0 # El sistema redirige a la tabla de solicitudes tras enviar el formulario
+            passed += 0 # El sistema NO redirige a la tabla de solicitudes tras enviar el formulario     
 
-        # El rol seleccionado se mantiene tras enviar el formulario
+        # [UAC] El rol seleccionado se mantiene tras enviar el formulario
         result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
-        # Los datos del certificado aparecen correctamente en el modo edición
+        # [UAC] Los datos de la solicitud aparecen correctamente en el modo edición
         shared.click_edit_button(driver, 'Solicitudes', 0, 0)   
-
         time.sleep(2)
-
         result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombres'),
                                                 shared.get_input_value(driver, 'Apellidos'),
                                                 shared.get_input_value(driver, 'Documento'),
@@ -87,6 +89,7 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
                                                 shared.get_textarea_value(driver, 'Observaciones')
                                                 ], [nombres, apellidos, num_doc, medio_pago, num_consig, cert, observaciones])
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
         print(f'AGGR SOL: {passed}/{UAC} UAC PASSED')
 

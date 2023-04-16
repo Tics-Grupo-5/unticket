@@ -24,8 +24,10 @@ def bus_sol_test(driver, rol, filter, keyword, expected):
 
         time.sleep(5)
 
+        # [UAC] Al buscar por id, estado, solicitante, certificado o encargado, aparecen los resultados correctos
         result = shared.UAC_check_search_results(driver, 'Solicitudes', keyword, filter['column'], filter['unique'], expected)
         passed += shared.evaluate_UAC_result(result)
+        # END UAC CHECK
 
         print(f'BUS SOL: {passed}/{UAC} UAC PASSED')
 
