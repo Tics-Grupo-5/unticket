@@ -173,11 +173,20 @@ def get_select_dropdown_values(driver, label):
     return [v.text for v in values]
 
 def multiselect_values(driver, label, values):
-    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
+    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
     dropdown.click()
+
+    checkboxes = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-simple-checkbox']")
+    for checkbox in checkboxes: 
+        # dot to not use absolute path
+        i = checkbox.find_element(By.XPATH, './/div[@class="v-input--selection-controls__input"]/i')
+        if 'mdi-checkbox-marked' in i.get_attribute('class'):
+            time.sleep(0.5)
+            checkbox.click()
+
     # Locate the desired value and click on it
     for value in values:
-        checkbox = driver.find_element(By.XPATH, f"//div[contains(text(),'{value}')]/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
+        checkbox = driver.find_element(By.XPATH, f"//div[text()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
         checkbox.click()
 
 def click_checkbox(driver, label):
@@ -413,6 +422,11 @@ def UAC_check_two_lists(list1, list2):
 
 def UAC_check_element_in_dropdown(element, dropdown_elements):
     if element in dropdown_elements:
+        return (True, f'element {element} is in dropdown')
+    return (False, f'element {element} is not in dropdown')
+
+def UAC_check_element_not_in_dropdown(element, dropdown_elements):
+    if element not in dropdown_elements:
         return (True, f'element {element} is in dropdown')
     return (False, f'element {element} is not in dropdown')
 

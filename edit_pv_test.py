@@ -7,7 +7,7 @@ import traceback
 
 def edit_pv_test(driver, pv, fecha_inicio, fecha_final, mode=0):
 
-    UAC = 1
+    UAC = 2
     passed = 0
 
     try:
@@ -28,10 +28,19 @@ def edit_pv_test(driver, pv, fecha_inicio, fecha_final, mode=0):
         time.sleep(2)
 
         shared.click_button(driver, 'Guardar')
-        time.sleep(2)
+        
+        result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'nombre'),
+                                                shared.get_input_value(driver, 'Inicio'),
+                                                shared.get_input_value(driver, 'Final')
+                                                ], [pv, fecha_inicio, fecha_final])
+        passed += shared.evaluate_UAC_result(result)
 
-        passed+=1
-    
+        shared.select_module(driver, 'Generar reporte')
+        time.sleep(5)
+
+        result = shared.UAC_check_element_in_dropdown(pv, shared.get_select_dropdown_values(driver, 'Periodo Académico'))
+        passed += shared.evaluate_UAC_result(result)
+
         print(f'EDIT PV: {passed}/{UAC} UAC PASSED')
 
     except Exception as e:

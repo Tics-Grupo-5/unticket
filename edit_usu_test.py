@@ -19,7 +19,7 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
 
         shared.search(driver, 'Usuarios', username)
 
-        shared.click_edit_button(driver, 'Usuarios', 0)
+        shared.click_edit_button(driver, 'Usuarios', 0, pos=1)
 
         time.sleep(5)
 
@@ -29,7 +29,7 @@ def edit_usu_test(driver, username, nombres, apellidos, tipo_doc, num_doc, cambi
         shared.enter_input_value(driver, 'Documento', num_doc)
 
         if cambio_estado:
-            shared.click_checkbox(driver, 'Estado: Activo')
+            shared.click_checkbox(driver, 'Estado')
 
         shared.multiselect_values(driver, 'Roles', roles)
         shared.press_esc_key(driver)

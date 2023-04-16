@@ -8,7 +8,7 @@ import traceback
 
 def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, programas, cambio_gratuito):
 
-    UAC = 1
+    UAC = 3
     passed = 0
 
     try:
@@ -30,8 +30,10 @@ def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, p
         shared.multiselect_values(driver, 'Programas', programas)
         shared.press_esc_key(driver)
 
+        gratuito = shared.get_checkbox_value(driver, 'Certificado Gratuito') 
         if cambio_gratuito:
             shared.click_checkbox(driver, 'Certificado Gratuito')
+            gratuito = not gratuito
 
         time.sleep(5)
         shared.click_button(driver, 'Guardar')
@@ -39,8 +41,25 @@ def edit_cert_test(driver, nombre, nuevo_nombre, nivel, precio, recaudo, desc, p
         time.sleep(10)
         shared.search(driver, 'Certificados', nombre)
 
+        result = shared.UAC_check_unique_record(driver, 'Certificados', nombre)
+        passed += shared.evaluate_UAC_result(result)
+
         result = shared.UAC_validate_saved_record(driver, 'Certificados', [nuevo_nombre, nivel, 'Habilitado'], 0)
         passed += shared.evaluate_UAC_result(result)
+
+        # Los datos del certificado aparecen correctamente en el modo edición
+        shared.click_edit_button(driver, 'Certificados', 0) 
+
+        result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombre'),
+                                                shared.get_input_value(driver, 'Nivel'),
+                                                shared.get_input_value(driver, 'Precio'),
+                                                shared.get_input_value(driver, 'Recaudo'),
+                                                shared.get_textarea_value(driver, 'Descripción'),
+                                                sorted(shared.get_multiselect_values(driver, 'Programas')),
+                                                shared.get_checkbox_value(driver, 'Certificado Gratuito') 
+                                                ], [nombre, nivel, precio, recaudo, desc, sorted(programas), gratuito])
+        passed += shared.evaluate_UAC_result(result)
+        shared.click_button(driver, 'Cerrar', 1)
 
         print(f'EDIT CERT: {passed}/{UAC} UAC PASSED')
 
