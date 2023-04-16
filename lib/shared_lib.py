@@ -341,14 +341,13 @@ def set_date_field_value(driver, mode, label, date_str):
     # Click the input field to open the date picker
     input_elem.click()
 
-    if mode == 0:
+    if mode == 0 or mode == 2:
         input_elem.click()
 
-    time.sleep(2)
+    time.sleep(5)
 
-    if mode == 1:
+    if mode == 1 or mode == 2:
         year_buttons = driver.find_elements(By.XPATH, f"//div[@class='v-picker__title__btn v-date-picker-title__year']")
-
         # Multiple modals are created => Then, check visibility
         year_button = None
         for possible in year_buttons:
@@ -380,7 +379,7 @@ def set_date_field_value(driver, mode, label, date_str):
 
     day_element.click()
 
-    if mode == 1:
+    if mode == 1 or mode == 2:
         oks = driver.find_elements(By.XPATH, f"//span[contains(text(),'OK')]/ancestor::button")
         
         # Multiple modals are created => Then, check visibility

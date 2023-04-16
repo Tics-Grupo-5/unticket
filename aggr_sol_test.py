@@ -7,7 +7,7 @@ import os
 import traceback
 import data.data_api as data_api
 
-def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, celular, grupo, programa, estado_usu, cert, observaciones, medio_pago, num_consig, nota_interna):
+def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, celular, grupo, programa, estado_usu, cert, observaciones, medio_pago, num_consig, nota_interna, fecha_grado_retiro=None):
 
     UAC = 5
     passed = 0
@@ -18,7 +18,7 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
         time.sleep(5)
 
         shared.select_module(driver, 'Solicitudes')
-        time.sleep(2)
+        time.sleep(5)
         shared.click_button(driver, 'Agregar')
         time.sleep(5)
 
@@ -40,6 +40,9 @@ def aggr_sol_test(driver, rol, nombres, apellidos, tipo_doc, num_doc, email, cel
 
         shared.select_value(driver, 'Programa', programa)
         shared.select_value(driver, 'Estado', estado_usu)
+        time.sleep(1)
+        if estado_usu != 'Estudiante Activo':
+            shared.set_date_field_value(driver, 2, 'Fecha de grado/retiro', fecha_grado_retiro)
         shared.select_value(driver, 'Certificado', cert)
         shared.enter_textarea_value(driver, 'Observaciones', observaciones)
         shared.select_value(driver, 'Medio de pago', medio_pago)
@@ -105,10 +108,11 @@ if __name__ == "__main__":
                   celular='3100000000', 
                   grupo='Pregrado', 
                   programa='Ingeniería Agrícola', 
-                  estado_usu='Estudiante activo', 
+                  estado_usu='Egresado', 
                   cert='Plan de estudio extenso pregrado', 
                   observaciones='observaciones', 
                   medio_pago='Banco', 
                   num_consig='2023000', 
-                  nota_interna='nota interna')
+                  nota_interna='nota interna',
+                  fecha_grado_retiro='2023-03-01')
     
