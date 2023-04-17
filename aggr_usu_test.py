@@ -7,6 +7,7 @@ import traceback
 import data.data_api as data_api
 import random
 import pandas as pd
+import datetime
 
 ROLES = ['Administrador']
 USERNAMES = ['gamerboy42', 'mysticalunicorn88', 'lovetoswim99', 'hikingfanatic33', 'teadrinker12', 'familyman77', 'doglover88', 'catlady44', 'birdwatcher22', 'butterflykisses44', 'bakingqueen99', 'guitarhero55', 'pianolover77', 'saxophoneplayer11']
@@ -46,11 +47,7 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
         # [UAC] El rol seleccionado se mantiene tras enviar el formulario
         result = shared.UAC_compare_form_fields([shared.get_role(driver)], [rol])
         passed += shared.evaluate_UAC_result(result)
-        DF = data_api.write_row_to_df(DF,
-                                      caso, 
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
+        DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
                                  'El rol seleccionado se mantiene tras enviar el formulario', 
                                  f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
@@ -61,11 +58,7 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
         time.sleep(3)
         result = shared.UAC_validate_saved_record(driver, 'Usuarios', [username, ' '.join(roles)], 0)
         passed += shared.evaluate_UAC_result(result)
-        DF = data_api.write_row_to_df(DF,
-                                      caso, 
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
+        DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
                                  'El usuario se guarda con los datos correctos', 
                                  f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
@@ -85,11 +78,7 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
                                                 ], [username, nombres, apellidos, tipo_doc, num_doc, True, sorted(roles)])
         passed += shared.evaluate_UAC_result(result)
         shared.click_button(driver, 'Cerrar', 1)
-        DF = data_api.write_row_to_df(DF,
-                                      caso, 
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
+        DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
                                  'Los datos del usuario aparecen correctamente en el modo edición', 
                                  f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
@@ -101,18 +90,8 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
 
     except Exception as e:
         traceback.print_exc()
-
-        DF = data_api.write_row_to_df(DF, 
-                                      caso,
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
-                                 'EXCEPTION', 
-                                 e,
-                                 'FAILED')
-        
+        DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR, 'EXCEPTION', e, 'EXCEPTION')
         print(f'AGGR USU: {passed}/{UAC} UAC PASSED')
-
         return DF
 
 if __name__ == "__main__":
@@ -122,7 +101,13 @@ if __name__ == "__main__":
     driver = shared.init_driver()
     login(driver, input('Username: '), getpass('Password: '))
 
-    for i in range(10):
+    start_time = time.time()
+    total_time = 0
+
+    nexp = 10
+    wait = 19
+
+    for i in range(nexp):
 
         rol = random.choice(ROLES)
         username = f'{USERNAMES[i]} - {id.get_id_()}'
@@ -133,6 +118,21 @@ if __name__ == "__main__":
         roles = random.sample(ROLES_2, random.randint(1, len(ROLES_2)))
 
         DF = aggr_usu_test(driver, DF, caso=i+1, rol=rol, username=username, nombres=nombres, apellidos=apellidos, tipo_doc=tipo_doc, num_doc=num_doc, roles=roles)
+
+        iteration_time = time.time() - start_time - total_time
+        total_time += iteration_time
+
+        print(f"Caso {i+1} tomó: {datetime.timedelta(seconds=iteration_time)}")
+        print(f"Caso {i+1} sin espera tomó aprox.: {datetime.timedelta(seconds=iteration_time - wait)}")
+
+    avg_time_per_iteration = total_time / nexp
+    total_time = time.time() - start_time
+
+    print('\n\n\n')
+    print(f"Tiempo promedio por caso: {datetime.timedelta(seconds=avg_time_per_iteration)}")
+    print(f"Tiempo promedio aprox. por caso sin espera: {datetime.timedelta(seconds=avg_time_per_iteration - wait)}") 
+    print(f"Tiempo total para {nexp} casos: {datetime.timedelta(seconds=total_time)}")
+    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time + wait * nexp)}")
 
     DF.to_excel(r'results\aggr_usu_test_results.xlsx', index=False)
 

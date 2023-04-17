@@ -40,11 +40,11 @@ def UAC_check_current_url(driver, urlkey):
     try:
         wait.until(EC.url_to_be(url))
         if driver.current_url == url:
-            return (True, f'{urlkey} reached')
+            return (True, f'URL {urlkey} alcanzada')
         else:
-            return (False, f'{urlkey} not reached')
+            return (False, f'URL {urlkey} no alcanzada')
     except Exception:
-        return (False, f'{urlkey} not reached')
+        return (False, f'URL {urlkey} no alcanzada')
     
 def UAC_check_redirection(driver, urlkey1, urlkey2):
     url1 = URLs[urlkey1]
@@ -53,11 +53,11 @@ def UAC_check_redirection(driver, urlkey1, urlkey2):
     try:
         wait.until(EC.url_to_be(url2))
         if driver.current_url == url2:
-            return (True, f'successful redirection from {urlkey1} to {urlkey2}')
+            return (True, f'redirección exitosa de {urlkey1} a {urlkey2}')
         else:
-            return (False, f'failed redirection from {urlkey1} to {urlkey2}')
+            return (False, f'redirección fallida de {urlkey1} a {urlkey2}')
     except Exception:
-        return (False, f'failed redirection from {urlkey1} to {urlkey2}')
+        return (False, f'redirección fallida de {urlkey1} a {urlkey2}')
     
 def select_role(driver, role):
     # Click on the dropdown list
@@ -83,7 +83,7 @@ def evaluate_UAC_result(result):
 def evaluate_composite_UAC_result(results):
     for result in results:
         if result[0] != True:
-            print('UAC Failed:', result[1])
+            print('UAC FAILED:', result[1])
             return 0
     print('UAC PASSED:', [result[1] for result in results])
     return 1
@@ -328,24 +328,24 @@ def UAC_check_search_results(driver, tablename, keyword, column, unique, expecte
     rows = tbody.find_elements(By.TAG_NAME, 'tr')
     if len(rows) == 1 and rows[0].text == 'No matching records found':
         if expected:
-            return (False, f'no records found for {keyword}')
-        return (True, f'no records found for {keyword} as expected')
+            return (False, f'no se encontraron resultados para {keyword} en {tablename}')
+        return (True, f'no se encontraron resultados para {keyword} en {tablename} como se esperaba')
     if unique:
         if len(rows) > 1:
-            return (False, f'multiple records found for {keyword}')
+            return (False, f'varios resultados encontrados para {keyword} en {tablename}')
         row = rows[0]
         tds = row.find_elements(By.TAG_NAME, 'td')
         td = tds[column]
         if keyword in td.text:
-            return (True, f'one result found for {keyword}')
-        return (False, f'{keyword} not found in {td.text}')
+            return (True, f'1 resultado encontrado para {keyword} en {tablename}')
+        return (False, f'{keyword} no se enontró en la celda {td.text} de la fila {row} en {tablename}')
     else:
         for row in rows:
             tds = row.find_elements(By.TAG_NAME, 'td')
             td = tds[column]
             if keyword not in td.text:
-                return (False, f'{keyword} not found in {td.text}')
-        return (True, f'{keyword} found in every row')
+                return (False, f'{keyword} no se enontró en la celda {td.text} de la fila {row} en {tablename}')
+        return (True, f'{keyword} se encontró en cada fila de la tabla {tablename}')
     
 
 def set_date_field_value(driver, mode, label, date_str):
@@ -449,27 +449,27 @@ def UAC_validate_downloaded_filename(file_name, file):
     if file == 0:
         pattern = re.compile(r"\d{4}-\d")
         if pattern.match(basename[:6]) and basename[7:].startswith(file_name):
-            return (True, f'valid filename for {file_name}: {basename}')
-        return (False, f'invalid filename for {file_name}: {basename}')
+            return (True, f'descarga exitosa y nombre de archivo válido: {basename}')
+        return (False, f'descarga exitosa pero nombre de archivo no válido: {basename}')
     elif file == 1:
         pattern = re.compile(r"C_\d{4}-\d")
         if pattern.match(basename[:8]) and basename[9:].startswith(file_name):
-            return (True, f'valid filename for {file_name}: {basename}')
-        return (False, f'invalid filename for {file_name}: {basename}')
+            return (True, f'descarga exitosa y nombre de archivo válido: {basename}')
+        return (False, f'descarga exitosa pero nombre de archivo no válido: {basename}')
     elif file == 2 or file == 3 or file == 5:
         if basename.startswith(file_name):
-            return (True, f'valid filename for {file_name}: {basename}')
-        return (False, f'invalid filename for {file_name}: {basename}')
+            return (True, f'descarga exitosa y nombre de archivo válido: {basename}')
+        return (False, f'descarga exitosa pero nombre de archivo no válido: {basename}')
     elif file == 4:
         pattern = re.compile(r"\d{4}-\d")
         if pattern.match(basename[14:20]) and basename[:14].startswith(file_name):
-            return (True, f'valid filename for {file_name}: {basename}')
-        return (False, f'invalid filename for {file_name}: {basename}')
+            return (True, f'descarga exitosa y nombre de archivo válido: {basename}')
+        return (False, f'descarga exitosa pero nombre de archivo no válido: {basename}')
 
 
 def UAC_validate_input_field(driver, targetInputFieldLabel, expectedValue):
     input = driver.find_element(By.XPATH, f"//label[text()='{targetInputFieldLabel}']/following-sibling::input")
-    return (input.text == expectedValue, f'The input field with label {targetInputFieldLabel} does not match value: {expectedValue}')
+    return (input.text == expectedValue, f'el input con etiqueta {targetInputFieldLabel} no coincide con el valor: {expectedValue}')
 
 def UAC_compare_form_fields(actual_values, expected_values):
     for a, b in zip(actual_values, expected_values):
@@ -489,8 +489,8 @@ def UAC_check_element_in_dropdown(element, dropdown_elements):
 
 def UAC_check_element_not_in_dropdown(element, dropdown_elements):
     if element not in dropdown_elements:
-        return (True, f'element {element} is in dropdown: {dropdown_elements}')
-    return (False, f'element {element} is not in dropdown: {dropdown_elements}')
+        return (True, f'{element} no se enontró en el dropdown: {dropdown_elements} como se esperaba')
+    return (False, f'{element} se encontró en el dropdown: {dropdown_elements}')
 
 def see_all_items(driver):
     select_elem = driver.find_element(By.XPATH, "//div[@class='v-data-footer__select']//div[@class='v-select__slot']")
@@ -503,19 +503,19 @@ def see_all_items(driver):
 def UAC_check_estados_for_role(estados, role):
     if role in ['Administrador', 'Gestor 1', 'Gestor 2']:
         if sorted(estados) == sorted(['Radicado', 'En trámite', 'Aclaración', 'Elaborado', 'Cerrado']):
-            return (True, f'available estados are correct for role {role}')
-        return (False, f'available estados are incorrect for role {role}')
+            return (True, f'los estados {sorted(estados)} corresponden al rol {role}')
+        return (False, f'los estados {sorted(estados)} no corresponden al rol {role}')
     elif role == 'Recepción':
         if estados == ['Cerrado']:
-            return (True, f'available estados are correct for role {role}')
-        return (False, f'available estados are incorrect for role {role}')
+            return (True, f'los estados {sorted(estados)} corresponden al rol {role}')
+        return (False, f'los estados {sorted(estados)} no corresponden al rol {role}')
 
 def UAC_check_registro_de_actividad(driver, keywords):
     card = driver.find_element(By.XPATH, '(//div[contains(@class, "v-card v-sheet")])[last()]')
     for keyword in keywords:
         if keyword not in card.text:
-            return (False, f'{keyword} not in registro de actividad')
-    return (True, f'{keywords} in registro de actividad')
+            return (False, f'{keyword} no aparece en registro de actividad')
+    return (True, f'{keywords} aparece en registro de actividad')
 
 def get_all_solicitudes_ids(driver):
     see_all_items(driver)
