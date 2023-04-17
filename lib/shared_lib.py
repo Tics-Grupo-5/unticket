@@ -187,25 +187,38 @@ def get_select_dropdown_values(driver, label):
     return [v.text for v in values]
 
 def multiselect_values(driver, label, values):
-    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
-    dropdown.click()
+    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']/input")
+    dropdown.send_keys(Keys.SPACE)
 
     checkboxes = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-simple-checkbox']")
     for checkbox in checkboxes: 
         # dot to not use absolute path
         i = checkbox.find_element(By.XPATH, './/div[@class="v-input--selection-controls__input"]/i')
         if 'mdi-checkbox-marked' in i.get_attribute('class'):
-            time.sleep(0.5)
+            time.sleep(1)
             checkbox.click()
 
     # Locate the desired value and click on it
     for value in values:
-        checkbox = driver.find_element(By.XPATH, f"//div[text()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
-        checkbox.click()
+        try:
+            checkbox = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title' and normalize-space()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
+            checkbox.click()
+        except:
+            while True:
+                try:
+                    checkbox = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title' and normalize-space()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
+                    checkbox.click()
+                    break
+                except:
+                    element = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]")
+                    for i in range(10):
+                        element.send_keys(Keys.DOWN)
+                        time.sleep(1)
+
 
 def get_dropdown_multiselect_values(driver, label):
-    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]")
-    dropdown.click()
+    dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']/input")
+    dropdown.send_keys(Keys.SPACE)
 
     items = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title']")
     values = [item.text for item in items]
