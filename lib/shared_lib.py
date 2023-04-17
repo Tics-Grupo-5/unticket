@@ -182,6 +182,14 @@ def get_select_dropdown_values(driver, label):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']")
     dropdown.click()
     time.sleep(2)
+
+    element = driver.find_element(By.XPATH, "//div[contains(@class, 'menuable__content__active')]")
+    for i in range(15):
+        driver.execute_script("arguments[0].scrollTop += 300", element)
+        time.sleep(0.5)
+
+    time.sleep(2)
+
     # Locate the desired value and click on it
     values = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title']")
     return [v.text for v in values]
@@ -189,6 +197,11 @@ def get_select_dropdown_values(driver, label):
 def multiselect_values(driver, label, values):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']/input")
     dropdown.send_keys(Keys.SPACE)
+
+    element = driver.find_element(By.XPATH, "//div[contains(@class, 'menuable__content__active')]")
+    for i in range(15):
+        driver.execute_script("arguments[0].scrollTop += 300", element)
+        time.sleep(0.5)
 
     checkboxes = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-simple-checkbox']")
     for checkbox in checkboxes: 
@@ -200,25 +213,18 @@ def multiselect_values(driver, label, values):
 
     # Locate the desired value and click on it
     for value in values:
-        try:
-            checkbox = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title' and normalize-space()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
-            checkbox.click()
-        except:
-            while True:
-                try:
-                    checkbox = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title' and normalize-space()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
-                    checkbox.click()
-                    break
-                except:
-                    element = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]")
-                    for i in range(10):
-                        element.send_keys(Keys.DOWN)
-                        time.sleep(1)
+        checkbox = driver.find_element(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title' and normalize-space()='{value}']/ancestor::div/preceding-sibling::div[contains(@class, 'v-list-item__action')]/div[contains(@class, 'v-simple-checkbox')]")
+        checkbox.click()
 
 
 def get_dropdown_multiselect_values(driver, label):
     dropdown = driver.find_element(By.XPATH, f"//label[contains(text(),'{label}')]/following-sibling::div[@class='v-select__selections']/input")
     dropdown.send_keys(Keys.SPACE)
+
+    element = driver.find_element(By.XPATH, "//div[contains(@class, 'menuable__content__active')]")
+    for i in range(15):
+        driver.execute_script("arguments[0].scrollTop += 300", element)
+        time.sleep(0.5)
 
     items = driver.find_elements(By.XPATH, f"//div[contains(@class, 'menuable__content__active')]//div[@class='v-list-item__title']")
     values = [item.text for item in items]
@@ -253,8 +259,8 @@ def UAC_check_unique_record(driver, tablename, value):
     tbody = table.find_element(By.TAG_NAME, 'tbody')
     rows = tbody.find_elements(By.TAG_NAME, 'tr')
     if len(rows) == 1:
-        return (True, f'1 record found for {value}')
-    return (False, f'multiple records found for {value}')
+        return (True, f'1 resultado encontrado para {value} en {tablename}')
+    return (False, f'varios resultados encontrados para {value} en {tablename}')
 
 
 def UAC_validate_saved_record(driver, tablename, values, idx):
@@ -263,7 +269,7 @@ def UAC_validate_saved_record(driver, tablename, values, idx):
     rows = tbody.find_elements(By.TAG_NAME, 'tr')
     if len(rows) > 0:
         if rows[0].text == 'No matching records found':
-            return (False, f'no records found for {values}')
+            return (False, f'no se encontraron resultados en {tablename} para {values}')
         row = rows[idx]
         tds = row.find_elements(By.TAG_NAME, 'td')
         tds = tds[:len(values)]
@@ -273,11 +279,10 @@ def UAC_validate_saved_record(driver, tablename, values, idx):
                     continue
                 real_value = ' '.join(sorted(td.text.lower().split())) 
                 expected_value = ' '.join(sorted(value.lower().split()))
-                print(real_value, expected_value)
                 if real_value != expected_value:
-                    return (False, f"mismatch between: [{real_value}] and {expected_value}]")
-            return (True, f"record data match with [{values}]")
-    return (False, f"no records found for [{', '.join(values)}]")
+                    return (False, f"{real_value} y {expected_value} no coinciden en {tablename}")
+            return (True, f"se encontró un resultado en {tablename} que coincide con [{values}]")
+    return (False, f"no se encontraron resultados para [{values}] en {tablename}")
 
 def click_edit_button(driver, tablename, idx, pos=1):
     table = driver.find_element(By.XPATH, f"//div[contains(text(), '{tablename}')]/following-sibling::div//table")
@@ -469,18 +474,18 @@ def UAC_validate_input_field(driver, targetInputFieldLabel, expectedValue):
 def UAC_compare_form_fields(actual_values, expected_values):
     for a, b in zip(actual_values, expected_values):
         if str(a) != str(b):
-            return (False, f'mismatch between {a} and {b}')
-    return (True, f'all values match: {actual_values}, {expected_values}')
+            return (False, f'{a} y {b} no coinciden')
+    return (True, f'{actual_values} y {expected_values} coinciden')
 
 def UAC_check_two_lists(list1, list2):
     if sorted(list1) == sorted(list2):
-        return (True, f'both lists are equal: {list1}, {list2}')
-    return (False, f'lists are different: {list1}, {list2}')
+        return (True, f'{sorted(list1)} y {sorted(list2)} coinciden')
+    return (False, f'{sorted(list1)}, {sorted(list2)} no coinciden')
 
 def UAC_check_element_in_dropdown(element, dropdown_elements):
     if element in dropdown_elements:
-        return (True, f'element {element} is in dropdown: {dropdown_elements}')
-    return (False, f'element {element} is not in dropdown: {dropdown_elements}')
+        return (True, f'{element} se encontró en el dropdown: {sorted(dropdown_elements)}')
+    return (False, f'{element} no se encontró en el dropdown: {sorted(dropdown_elements)}')
 
 def UAC_check_element_not_in_dropdown(element, dropdown_elements):
     if element not in dropdown_elements:

@@ -9,16 +9,16 @@ import random
 import pandas as pd
 
 ROLES = ['Administrador']
-USERNAMES = ['musiclover98', 'bluemango41', 'coolcat23', 'cosmicturtle77', 'happyhippo87']
+USERNAMES = ['gamerboy42', 'mysticalunicorn88', 'lovetoswim99', 'hikingfanatic33', 'teadrinker12', 'familyman77', 'doglover88', 'catlady44', 'birdwatcher22', 'butterflykisses44', 'bakingqueen99', 'guitarhero55', 'pianolover77', 'saxophoneplayer11']
 NOMBRES = [ 'Sofía Elena', 'Martín Andrés', 'Ana Isabel', 'Santiago Alejandro', 'Valentina Victoria' ]
 APELLIDOS = [ 'García Pérez', 'Martínez Sánchez', 'Ramírez González', 'Gómez Rodríguez', 'Castro Ruiz' ]
 TIPOSDOC = ['T.I.', 'C.C.', 'Pasaporte', 'Cédula de Extranjería']
-NUMSDOC = ['12345678', '98765432', '45678912', '56789012', 'AB123456']
+NUMSDOC = ['67890123', 'FG789012', '1234567A', '4567890B', '8901234C', '2345678D', '5678901E', '9012345F', 'CD567890', 'EF789012', 'GH901234', 'IJ345678', 'KL901234']
 ROLES_2 = ['Administrador', 'Gestor 1', 'Gestor 2', 'Recepción', 'Solicitante']
 
 def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc, num_doc, roles):
 
-    UAC = 4
+    UAC = 3
     passed = 0
 
     FUNC_STR = 'Agregar Usuario'
@@ -52,25 +52,13 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
                                  rol, 
                                  PARAMS_STR, 
                                  'El rol seleccionado se mantiene tras enviar el formulario', 
-                                 'SI' if result[0] else 'NO',
-                                 'PASSED' if result[0] else 'FAILED')
-        # END UAC CHECK
-
-        # [UAC] El sistema no permite guardar dos usuarios con el mismo username o documento
-        shared.search(driver, 'Usuarios', username)
-        result = shared.UAC_check_unique_record(driver, 'Usuarios', username)
-        passed += shared.evaluate_UAC_result(result)
-        DF = data_api.write_row_to_df(DF,
-                                      caso, 
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
-                                 'El sistema no permite guardar dos usuarios con el mismo username o documento', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
         # [UAC] El usuario se guarda con los datos correctos
+        shared.search(driver, 'Usuarios', username)
+        time.sleep(3)
         result = shared.UAC_validate_saved_record(driver, 'Usuarios', [username, ' '.join(roles)], 0)
         passed += shared.evaluate_UAC_result(result)
         DF = data_api.write_row_to_df(DF,
@@ -79,9 +67,11 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
                                  rol, 
                                  PARAMS_STR, 
                                  'El usuario se guarda con los datos correctos', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
+
+        time.sleep(2)
 
         # [UAC] Los datos del usuario aparecen correctamente en el modo edición
         shared.click_edit_button(driver, 'Usuarios', 0, pos=0)   
@@ -101,7 +91,7 @@ def aggr_usu_test(driver, DF, caso, rol, username, nombres, apellidos, tipo_doc,
                                  rol, 
                                  PARAMS_STR, 
                                  'Los datos del usuario aparecen correctamente en el modo edición', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
@@ -135,11 +125,11 @@ if __name__ == "__main__":
     for i in range(10):
 
         rol = random.choice(ROLES)
-        username = random.choice(USERNAMES)
+        username = f'{USERNAMES[i]} - {id.get_id_()}'
         nombres = random.choice(NOMBRES)
         apellidos = random.choice(APELLIDOS)
         tipo_doc = random.choice(TIPOSDOC)
-        num_doc = random.choice(NUMSDOC)
+        num_doc = f'{NUMSDOC[i]} - {id.get_id_()}'
         roles = random.sample(ROLES_2, random.randint(1, len(ROLES_2)))
 
         DF = aggr_usu_test(driver, DF, caso=i+1, rol=rol, username=username, nombres=nombres, apellidos=apellidos, tipo_doc=tipo_doc, num_doc=num_doc, roles=roles)

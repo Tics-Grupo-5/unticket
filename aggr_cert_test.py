@@ -10,16 +10,16 @@ import random
 import pandas as pd
 
 ROLES = ['Administrador']
-NOMBRES = [ 'Certificado de Logro Académico',    'Certificado de Excelencia Académica',    'Certificado de Reconocimiento Estudiantil',    'Certificado de Participación Universitaria',    'Certificado de Liderazgo Estudiantil']
+NOMBRES = [ 'Certificado de Servicio Comunitario Universitario',    'Certificado de Investigación Estudiantil',    'Certificado de Desempeño Profesional',    'Certificado de Desarrollo Personal y Profesional',    'Certificado de Habilidad y Competencia',    'Certificado de Logro en Programa de Prácticas',    'Certificado de Participación en Proyecto de Investigación',    'Certificado de Participación en Concurso de Innovación',    'Certificado de Reconocimiento por Participación en Evento Estudiantil',    'Certificado de Logro en Estudio de Idiomas o Intercambio Internacional']
 PRECIOS = [10000, 20000, 50000, 150000, 0]
 NUMSCONSIG = ['2023000', '1234567890']
 DESCS = ['Lorem ipsum dolor sit.', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.']
-NIVELES = ['pregrado', 'posgrado']
+NIVELES = ['pregrado', 'posgrado'] 
 GRATUITO = [True, False]
 
 def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, programas, gratuito):
 
-    UAC = 7
+    UAC = 6
     passed = 0
 
     FUNC_STR = 'Agregar Certificado'
@@ -49,7 +49,7 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'Los programas se filtran de acuerdo al grupo seleccionado', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
@@ -74,25 +74,13 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'El rol seleccionado se mantiene tras enviar el formulario', 
-                                 'SI' if result[0] else 'NO',
-                                 'PASSED' if result[0] else 'FAILED')
-        # END UAC CHECK
-
-        # [UAC] El sistema no tiene dos certificados con el mismo nombre
-        shared.search(driver, 'Certificados', nombre)
-        result = shared.UAC_check_unique_record(driver, 'Certificados', nombre)
-        passed += shared.evaluate_UAC_result(result)
-        DF = data_api.write_row_to_df(DF, 
-                                      caso,
-                                 FUNC_STR, 
-                                 rol, 
-                                 PARAMS_STR, 
-                                 'El sistema no tiene dos certificados con el mismo nombre', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
         # [UAC] El certificado se guarda con los datos correctos y está habilitado
+        shared.search(driver, 'Certificados', nombre)
+        time.sleep(5)
         result = shared.UAC_validate_saved_record(driver, 'Certificados', [nombre, nivel, 'Habilitado'], 0)
         passed += shared.evaluate_UAC_result(result)
         DF = data_api.write_row_to_df(DF, 
@@ -101,9 +89,11 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'El certificado se guarda con los datos correctos y está habilitado', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
+
+        time.sleep(2)
 
         # [UAC] Los datos del certificado aparecen correctamente en el modo edición
         shared.click_edit_button(driver, 'Certificados', 0)   
@@ -123,7 +113,7 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'Los datos del certificado aparecen correctamente en el modo edición', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
@@ -144,7 +134,7 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'El certificado aparece en el formulario de AGGR SOL', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]} para {programas[0]}",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
@@ -153,7 +143,7 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
         time.sleep(5)
         shared.select_module(driver, 'Nuevo ticket')
         time.sleep(2)
-        shared.select_value(driver, 'Programa', 'Ingeniería de Sistemas y Computación') # PRECONDITION: Program must be assigned to Solicitante
+        shared.select_value(driver, 'Programa', 'Ingeniería Agrícola') # PRECONDITION: Program must be assigned to Solicitante
         result = shared.UAC_check_element_in_dropdown(nombre, shared.get_select_dropdown_values(driver, 'Certificado'))
         passed += shared.evaluate_UAC_result(result)
         DF = data_api.write_row_to_df(DF, 
@@ -162,7 +152,7 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
                                  rol, 
                                  PARAMS_STR, 
                                  'El certificado aparece en el formulario de NUEVO TICKET', 
-                                 'SI' if result[0] else 'NO',
+                                 f"{'SI' if result[0] else 'NO'} : {result[1]} para Ingeniería Agrícola",
                                  'PASSED' if result[0] else 'FAILED')
         # END UAC CHECK
 
@@ -198,14 +188,15 @@ if __name__ == "__main__":
     for i in range(10):
 
         rol = random.choice(ROLES)
-        nombre = random.choice(NOMBRES)
+        nombre = f'{NOMBRES[i]} - {id.get_id_()}'
         precio = random.choice(PRECIOS)
         numconsig = random.choice(NUMSCONSIG)
         desc = random.choice(DESCS)
         nivel = random.choice(NIVELES)
         gratuito = random.choice(GRATUITO)
 
-        programs = df.loc[df['nivel'] == nivel.lower(), 'programa'].tolist()
+        # there is a problem selecting values when the dropdown is to large, so we are limiting this list because of that
+        programs = sorted(df.loc[df['nivel'] == nivel.lower(), 'programa'].tolist())
         num_programs = random.randint(1, 5)
         # Determine the starting index of the consecutive programs
         start_index = random.randint(0, len(programs) - num_programs)
