@@ -8,7 +8,7 @@ import traceback
 
 def des_arch_test(driver, rol, id, file, username):
 
-    UAC = 2
+    UAC = 1
     passed = 0
 
     try:
@@ -26,12 +26,10 @@ def des_arch_test(driver, rol, id, file, username):
         shared.descargar_soporte(driver, 0)
         time.sleep(5)
 
-        # [UAC] El archivo se descarga correctamente
-        # [UAC] El archivo se descarga con el nombre correcto
+        # [UAC] El archivo se descarga correctamente y con el nombre correcto
         file_name_substr = f'{username}_{id}'
         result = shared.UAC_validate_downloaded_filename(file_name_substr, file)
         passed += shared.evaluate_UAC_result(result)
-        passed += 1
         # END UAC CHECK
 
         print(f'DES ARCH: {passed}/{UAC} UAC PASSED')

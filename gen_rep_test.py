@@ -10,7 +10,7 @@ import traceback
 
 def gen_rep_test(driver, rol, report, periodo_academico=None, f_inicio=None, f_final=None):
 
-    UAC = 2
+    UAC = 1
     passed = 0
 
     try:
@@ -27,36 +27,30 @@ def gen_rep_test(driver, rol, report, periodo_academico=None, f_inicio=None, f_f
             shared.click_button(driver, 'Generar')
             time.sleep(5)
 
-            # [UAC] El archivo se descarga correctamente
-            # [UAC] El archivo se descarga con el nombre correcto
+            # [UAC] El archivo se descarga correctamente y con el nombre correcto
             file_name_substr = f'ReportePeriodo{periodo_academico}'
             result = shared.UAC_validate_downloaded_filename(file_name_substr, file=2)
             passed += shared.evaluate_UAC_result(result)
-            passed += 1
             # END UAC CHECK
 
         elif report == 2:
             shared.click_button(driver, 'reporte histórico')
             time.sleep(5)
 
-            # [UAC] El archivo se descarga correctamente
-            # [UAC] El archivo se descarga con el nombre correcto
+            # [UAC] El archivo se descarga correctamente y con el nombre correcto
             file_name_substr = f'ReporteHistorico'
             result = shared.UAC_validate_downloaded_filename(file_name_substr, file=3)
             passed += shared.evaluate_UAC_result(result)
-            passed += 1
             # END UAC CHECK
 
         elif report == 3:
             shared.click_button(driver, 'reporte periodo actual')
             time.sleep(5)
 
-            # [UAC] El archivo se descarga correctamente
-            # [UAC] El archivo se descarga con el nombre correcto
+            # [UAC] El archivo se descarga correctamente y con el nombre correcto
             file_name_substr = f'ReportePeriodo'
             result = shared.UAC_validate_downloaded_filename(file_name_substr, file=4)
             passed += shared.evaluate_UAC_result(result)
-            passed += 1
             # END UAC CHECK
 
         elif report == 4:
@@ -67,12 +61,10 @@ def gen_rep_test(driver, rol, report, periodo_academico=None, f_inicio=None, f_f
             shared.click_button(driver, 'Generar', idx=1)
             time.sleep(5)
 
-            # [UAC] El archivo se descarga correctamente
-            # [UAC] El archivo se descarga con el nombre correcto
+            # [UAC] El archivo se descarga correctamente y con el nombre correcto
             file_name_substr = f'ReporteFechas'
             result = shared.UAC_validate_downloaded_filename(file_name_substr, file=5)
             passed += shared.evaluate_UAC_result(result)
-            passed += 1
             # END UAC CHECK
 
 

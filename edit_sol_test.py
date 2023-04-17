@@ -19,7 +19,7 @@ estado_to_roles = {
 
 def edit_sol_test(driver, username, rol, id, estado, encargado, rol_encargado, nota):
 
-    UAC = 9
+    UAC = 8
     passed = 0
 
     try:
@@ -36,15 +36,13 @@ def edit_sol_test(driver, username, rol, id, estado, encargado, rol_encargado, n
 
         time.sleep(5)
 
-        # [UAC] El soporte de pago se descarga correctamente
-        # [UAC] El soporte de pago se descarga con el nombre correcto
+        # [UAC] El soporte de pago se descarga correctamente y con el nombre correcto
         shared.descargar_soporte_from_edit_form(driver)
         username = shared.get_input_value(driver, 'Usuario')
         file_name_substr = f'{username}_{id}'
         time.sleep(5)
         result = shared.UAC_validate_downloaded_filename(file_name_substr, file=0)
         passed += shared.evaluate_UAC_result(result)
-        passed += 1
         # END UAC CHECK
 
         # [UAC] Los estados disponibles son acorde al rol
