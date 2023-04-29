@@ -83,7 +83,7 @@ if __name__ == "__main__":
         keyword = KEYWORDS[i]
         expected = EXPECTED[i]
 
-        DF = bus_msol_test(driver, rol=rol, filter=filter, keyword=keyword, expected=expected)
+        DF = bus_msol_test(driver, DF, caso=i+1, rol=rol, filter=filter, keyword=keyword, expected=expected)
 
         iteration_time = time.time() - start_time - total_time
         total_time += iteration_time

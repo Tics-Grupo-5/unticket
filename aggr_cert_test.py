@@ -11,10 +11,10 @@ import pandas as pd
 import datetime
 
 ROLES = ['Administrador']
-NOMBRES = [ 'Certificado de Servicio Comunitario Universitario',    'Certificado de Investigación Estudiantil',    'Certificado de Desempeño Profesional',    'Certificado de Desarrollo Personal y Profesional',    'Certificado de Habilidad y Competencia',    'Certificado de Logro en Programa de Prácticas',    'Certificado de Participación en Proyecto de Investigación',    'Certificado de Participación en Concurso de Innovación',    'Certificado de Reconocimiento por Participación en Evento Estudiantil',    'Certificado de Logro en Estudio de Idiomas o Intercambio Internacional']
+NOMBRES = [ 'Certificado']
 PRECIOS = [10000, 20000, 50000, 150000, 0]
 NUMSCONSIG = ['2023000', '1234567890']
-DESCS = ['Lorem ipsum dolor sit.', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.']
+DESCS = ['Lorem ipsum dolor sit.']
 NIVELES = ['pregrado', 'posgrado'] 
 GRATUITO = [True, False]
 
@@ -123,14 +123,16 @@ def aggr_cert_test(driver, DF, caso, rol, nombre, precio, recaudo, desc, nivel, 
         shared.select_role(driver, 'Solicitante')
         time.sleep(5)
         shared.select_module(driver, 'Nuevo ticket')
-        time.sleep(2)
+        time.sleep(4)
         shared.select_value(driver, 'Programa', 'Ingeniería Agrícola') # PRECONDITION: Program must be assigned to Solicitante: se escogió Ingeniería Agrícola arbitrariamente.
         result = shared.UAC_check_element_in_dropdown(nombre, shared.get_select_dropdown_values(driver, 'Certificado'))
-        passed += shared.evaluate_UAC_result(result)
+        # cannot assign tuple values so I initialize this array
+        res = [True if result[0] and 'Ingeniería Agrícola' in programas or not result[0] and 'Ingeniería Agrícola' not in programas else False, result[1]]
+        passed += shared.evaluate_UAC_result(res)
         DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
                                  'El certificado aparece en el formulario de NUEVO TICKET según el programa seleccionado', 
-                                 f"{'SI' if result[0] and 'Ingeniería Agrícola' in programas or not result[0] and 'Ingeniería Agrícola' not in programas else 'NO'} : {result[1]} para Ingeniería Agrícola",
-                                 'PASSED' if result[0] and 'Ingeniería Agrícola' in programas or not result[0] and 'Ingeniería Agrícola' not in programas else 'FAILED')
+                                 f"{'SI' if res[0] else 'NO'} : {res[1]} para Ingeniería Agrícola",
+                                 'PASSED' if res[0] else 'FAILED')
         # END UAC CHECK
 
         print(f'AGGR CERT: {passed}/{UAC} UAC PASSED')
@@ -156,12 +158,12 @@ if __name__ == "__main__":
     total_time = 0
 
     nexp = 10
-    wait = 42
+    wait = 44
 
     for i in range(nexp):
 
         rol = random.choice(ROLES)
-        nombre = f'{NOMBRES[i]} - {id.get_id_()}'
+        nombre = f'{random.choice(NOMBRES)} - {id.get_id_()}'
         precio = random.choice(PRECIOS)
         numconsig = random.choice(NUMSCONSIG)
         desc = random.choice(DESCS)
@@ -190,6 +192,6 @@ if __name__ == "__main__":
     print(f"Tiempo promedio por caso: {datetime.timedelta(seconds=avg_time_per_iteration)}")
     print(f"Tiempo promedio aprox. por caso sin espera: {datetime.timedelta(seconds=avg_time_per_iteration - wait)}") # 42 es el tiempo de todos los time.sleep sin contar funciones en shared
     print(f"Tiempo total para {nexp} casos: {datetime.timedelta(seconds=total_time)}")
-    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time + wait * nexp)}")
+    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time - wait * nexp)}")
 
     DF.to_excel(r'results\aggr_cert_test_results.xlsx', index=False)

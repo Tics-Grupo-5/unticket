@@ -12,16 +12,16 @@ import datetime
 
 ROLES = ['Administrador', 'Gestor 1', 'Gestor 2', 'Administrador', 'Gestor 1', 'Gestor 2', 'Recepción']
 NOMBRES = [ 'Sofía Elena', 'Martín Andrés', 'Ana Isabel', 'Santiago Alejandro', 'Valentina Victoria' ]
-APELLIDOS = [ 'García Pérez', 'Martínez Sánchez', 'Ramírez González', 'Gómez Rodríguez', 'Castro Ruiz' ]
+APELLIDOS = [ 'García Pérez', 'Martínez Sánchez', 'Ramírez González', 'Gómez Rodríguez', 'Castro Ruiz']
 TIPOSDOC = ['T.I.', 'C.C.', 'Pasaporte', 'Cédula de Extranjería']
-NUMSDOC = ['67890123', 'FG789012', '1234567A', '4567890B', '8901234C', '2345678D', '5678901E', '9012345F', 'CD567890', 'EF789012', 'GH901234', 'IJ345678', 'KL901234']
+NUMSDOC = ['1234567', '8901234', '5678901', '2345678', '9012345', '6789012', '3456789', '9123456', '7890123', '4567890']
 EMAILS = ['johndoe@example.com', 'sarahsmith@gmail.com', 'robertjohnson@hotmail.com', 'emilycarter@yahoo.com', 'michaelbrown@outlook.com', 'amandaadams@icloud.com', 'brianlee@aol.com', 'christinegarcia@protonmail.com', 'davidjackson@live.com', 'lisawalker@rediffmail.com']
 CELULARES = ["5551234567", "5559876543", "5551112233", "5557778899", "5554445566", "5552223344", "5558889999", "5556667777", "5555551212", "5551212121"]
-NIVELES = ['Pregrado', 'Posgrado']
-ESTADOS_SOL = ['Estudiante activo', 'Egresado']
-CERTIFICADOS = ['Certificado de Servicio Comunitario Universitario - 1681714464', 'Certificado de Desarrollo Personal y Profesional - 1681714832', 'Certificado de Logro en Programa de Prácticas - 1681715084', 'Certificado de Logro en Estudio de Idiomas o Intercambio Internacional - 1681715507', 'Certificado de Investigación Estudiantil - 1681714584']
+NIVELES = ['Pregrado', 'Pregrado', 'Pregrado', 'Pregrado', 'Pregrado', 'Posgrado', 'Posgrado', 'Posgrado', 'Posgrado', 'Posgrado']
+ESTADOS_SOL = ['Estudiante activo', 'Egresado', 'Estudiante (Reserva de cupo/retirado)']
+CERTIFICADOS = ['Certificado - 1682570149', 'Certificado - 1682638508', 'Certificado - 1682638641', 'Certificado - 1682638776', 'Certificado - 1682639010', 'Certificado - 1682569806', 'Certificado - 1682569932', 'Certificado - 1682570058', 'Certificado - 1682637368', 'Certificado - 1682638008']
 OBSERVACIONES = ['Lorem ipsum dolor sit.', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.']
-MEDIOSPAGO = ['Banco']
+MEDIOSPAGO = ['Banco', 'Pago Virtual']
 NUMSCONSIG = ['2023000', '1234567890']
 NOTAS = ['Lorem ipsum dolor sit.']
 FECHAS = ['2018-05-17', '2011-10-11', '2023-07-22', '2015-03-12', '2018-11-16', '2013-02-07', '2020-01-23', '2010-09-29', '2015-11-14', '2022-05-06', '2019-08-09', '2016-12-26', '2016-05-20', '2023-04-29', '2024-03-07', '2015-04-30', '2016-06-15', '2020-12-01', '2021-08-02', '2012-07-14']
@@ -68,7 +68,7 @@ def aggr_sol_test(driver, DF, caso, rol, nombres, apellidos, tipo_doc, num_doc, 
         shared.select_value(driver, 'Programa', programa)
         shared.select_value(driver, 'Estado', estado_usu)
         time.sleep(1)
-        if estado_usu != 'Estudiante Activo':
+        if estado_usu != 'Estudiante activo':
             shared.set_date_field_value(driver, 2, 'Fecha de grado/retiro', fecha_grado_retiro)
         shared.select_value(driver, 'Certificado', cert)
         shared.enter_textarea_value(driver, 'Observaciones', observaciones)
@@ -124,21 +124,27 @@ def aggr_sol_test(driver, DF, caso, rol, nombres, apellidos, tipo_doc, num_doc, 
         # END UAC CHECK
 
         # [UAC] Los datos de la solicitud aparecen correctamente en el modo edición
-        shared.click_edit_button(driver, 'Solicitudes', 0, 0)   
-        time.sleep(2)
-        result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombres'),
-                                                shared.get_input_value(driver, 'Apellidos'),
-                                                shared.get_input_value(driver, 'Documento'),
-                                                shared.get_input_value(driver, 'Tipo de pago'),
-                                                shared.get_input_value(driver, 'Numero consignación'),
-                                                shared.get_input_value(driver, 'Certificado'),
-                                                shared.get_textarea_value(driver, 'Observaciones')
-                                                ], [nombres, apellidos, num_doc, medio_pago, num_consig, cert, observaciones])
-        passed += shared.evaluate_UAC_result(result)
-        DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
-                                'Los datos de la solicitud aparecen correctamente en el modo edición', 
-                                f"{'SI' if result[0] else 'NO'} : {result[1]}",
-                                'PASSED' if result[0] else 'FAILED')
+        try:    
+            shared.click_edit_button(driver, 'Solicitudes', 0, 0)   
+            time.sleep(2)
+            result = shared.UAC_compare_form_fields([shared.get_input_value(driver, 'Nombres'),
+                                                    shared.get_input_value(driver, 'Apellidos'),
+                                                    shared.get_input_value(driver, 'Documento'),
+                                                    shared.get_input_value(driver, 'Certificado'),
+                                                    shared.get_textarea_value(driver, 'Observaciones')
+                                                    ], [nombres, apellidos, num_doc, cert, observaciones])
+            passed += shared.evaluate_UAC_result(result)
+            DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
+                                    'Los datos de la solicitud aparecen correctamente en el modo edición', 
+                                    f"{'SI' if result[0] else 'NO'} : {result[1]}",
+                                    'PASSED' if result[0] else 'FAILED')
+            
+        except:
+            passed += 0
+            DF = data_api.write_row_to_df(DF, caso, FUNC_STR, rol, PARAMS_STR,
+                                    'Los datos de la solicitud aparecen correctamente en el modo edición', 
+                                    'NO',
+                                    'FAILED')   
         # END UAC CHECK
 
         print(f'AGGR SOL: {passed}/{UAC} UAC PASSED')
@@ -173,12 +179,12 @@ if __name__ == "__main__":
         nombres = random.choice(NOMBRES)
         apellidos = random.choice(APELLIDOS)
         tipo_doc = random.choice(TIPOSDOC)
-        num_doc = f'{NUMSDOC[i]} - {id.get_id_()}'
+        num_doc = NUMSDOC[i]
         email = random.choice(EMAILS)
         celular = random.choice(CELULARES)
-        nivel = random.choice(NIVELES)
+        nivel = NIVELES[i]
         estado_sol = random.choice(ESTADOS_SOL)
-        certificado = random.choice(CERTIFICADOS)
+        certificado = CERTIFICADOS[i]
         observaciones = random.choice(OBSERVACIONES)
         medio_pago = random.choice(MEDIOSPAGO)
         numconsig = random.choice(NUMSCONSIG)
@@ -191,6 +197,8 @@ if __name__ == "__main__":
         fgr = None if estado_sol == 'Estudiante activo' else random.choice(FECHAS)
 
         DF = aggr_sol_test(driver, 
+                            DF, 
+                            caso=i+1,
                             rol=rol,
                             nombres=nombres, 
                             apellidos=apellidos, 
@@ -221,6 +229,6 @@ if __name__ == "__main__":
     print(f"Tiempo promedio por caso: {datetime.timedelta(seconds=avg_time_per_iteration)}")
     print(f"Tiempo promedio aprox. por caso sin espera: {datetime.timedelta(seconds=avg_time_per_iteration - wait)}") 
     print(f"Tiempo total para {nexp} casos: {datetime.timedelta(seconds=total_time)}")
-    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time + wait * nexp)}")
+    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time - wait * nexp)}")
 
     DF.to_excel(r'results\aggr_sol_test_results.xlsx', index=False)

@@ -11,7 +11,7 @@ import data.data_api as data_api
 
 ROLES = ['Administrador']
 FILTERS = ([filters.FILTERS['certificados']['nombre'] ] * 6) + ([filters.FILTERS['certificados']['grupo']] * 4)
-KEYWORDS = ['Certificado de Investigación Estudiantil - 1681714584', 'Certificado de Desarrollo Personal y Profesional - 1681714832', 'UN Certificado 2023', 'Certificado 20190000', 'Certificado de Logro en Programa de Prácticas - 1681715084', 'Certificado de Servicio Comunitario Universitario - 1681714464', 'Pregrado', 'Secundaria', 'Posgrado', 'PHD']
+KEYWORDS = ['Certificado - 1682570149', 'Certificado - 1682638508', 'UN Certificado 2023', 'Certificado 20190000', 'Certificado - 1682638641', 'Certificado - 1682638776', 'Pregrado', 'Secundaria', 'Posgrado', 'PHD']
 EXPECTED = [True, True, False, False, True, True, True, False, True, False]
 
 # Test buscar certificado - admin
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         keyword = KEYWORDS[i]
         expected = EXPECTED[i]
 
-        DF = bus_cert_test(driver, rol=rol, filter=filter, keyword=keyword, expected=expected)
+        DF = bus_cert_test(driver, DF, caso=i+1, rol=rol, filter=filter, keyword=keyword, expected=expected)
 
         iteration_time = time.time() - start_time - total_time
         total_time += iteration_time
@@ -90,6 +90,6 @@ if __name__ == "__main__":
     print(f"Tiempo promedio por caso: {datetime.timedelta(seconds=avg_time_per_iteration)}")
     print(f"Tiempo promedio aprox. por caso sin espera: {datetime.timedelta(seconds=avg_time_per_iteration - wait)}") 
     print(f"Tiempo total para {nexp} casos: {datetime.timedelta(seconds=total_time)}")
-    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time + wait * nexp)}")
+    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time - wait * nexp)}")
 
     DF.to_excel(r'results\bus_cert_test_results.xlsx', index=False)

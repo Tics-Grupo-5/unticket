@@ -23,4 +23,6 @@ def write_row_to_df(df, caso, funcionalidad, rol, params, uac, salida, resultado
         'RESULTADO': resultado
     }])], ignore_index=True)
     
+    print(df.tail(1))
+
     return df
