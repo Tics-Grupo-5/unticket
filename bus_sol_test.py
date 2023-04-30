@@ -98,6 +98,6 @@ if __name__ == "__main__":
     print(f"Tiempo promedio por caso: {datetime.timedelta(seconds=avg_time_per_iteration)}")
     print(f"Tiempo promedio aprox. por caso sin espera: {datetime.timedelta(seconds=avg_time_per_iteration - wait)}") 
     print(f"Tiempo total para {nexp} casos: {datetime.timedelta(seconds=total_time)}")
-    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time + wait * nexp)}")
+    print(f"Tiempo total aprox. para {nexp} casos sin espera: {datetime.timedelta(seconds=total_time - wait * nexp)}")
 
     DF.to_excel(r'results\bus_sol_test_results.xlsx', index=False)

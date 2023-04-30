@@ -158,7 +158,7 @@ if __name__ == "__main__":
     total_time = 0
 
     nexp = 10
-    wait = 44
+    wait = 44 # suma de todos los time sleep en la función
 
     for i in range(nexp):
 
